@@ -7,7 +7,26 @@
     <title>radio</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+        <div class="nav" id="top-nav"></div>
+        <div id="stations-container">
+            <div id="stations"></div>
+        </div>
+        <div class="nav" id="bottom-nav"></div>
+
+        <div id="player">
+            <div id="player-row-1"> 
+                <span id="player-live-dot">●</span>
+                <div id="player-text-content">
+                    <div id="player-title">THE LOT RADIO THE LOT RADIO THE LOT RADIO</div>
+                    <div id="player-sub-title">Live</div>
+                </div>
+            </div>
+            <button id="player-btn">
+                <img id="player-btn-icon" alt="">
+            </button>
+        </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

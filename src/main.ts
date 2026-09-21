@@ -1,5 +1,7 @@
+// main.ts
 import './style.css'
+import { App } from "./app.ts"
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <h1>Radio Player</h1>
-`
+
+const app = new App();
+app.render();

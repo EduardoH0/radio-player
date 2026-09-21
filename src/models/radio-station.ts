@@ -8,4 +8,5 @@ export interface RadioStation {
     country?: string;
     quality?: string;
     image?: string;
+    tags?: string[];
 }
