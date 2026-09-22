@@ -64,12 +64,22 @@ button {
     align-items: center;
 }
 .nav {
+    padding: 4px 15px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
     flex-shrink: 0;
 }
 #top-nav {
     width: 100%;
     height: 50px;
     border-bottom: 5px solid var(--color-1);
+}
+#import-library-btn {
+    height: 80%;
+    aspect-ratio: 1/1;
+    margin-left: auto;
+    background-color: var(--color-6);
 }
 #bottom-nav {
     width: 100%;

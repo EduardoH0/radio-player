@@ -2,7 +2,8 @@ import { createStationElement } from './elements/station-element';
 import { createLibrary, type RadioLibrary } from './models/radio-library'
 import type { RadioStation } from './models/radio-station';
 import { Player } from './player';
-import { loadLibrary } from './services/storage'
+import { loadLibrary, saveLibrary } from './services/storage'
+import { importLibrary } from './services/library-file';
 
 
 export class App {
@@ -14,43 +15,25 @@ export class App {
         this.player = new Player();
         this.library = loadLibrary() ?? createLibrary();
 
-        if (this.library.stations.length === 0) {
-            this.library.stations.push({
-                id: "cadena-ser-radio",
-                title: "Cadena SER",
-                url: "https://playerservices.streamtheworld.com/api/livestream-redirect/CADENASERAAC.m3u8",
-                country: "ES",
-                tags: ["News", "Talk"]
-            });
-            this.library.stations.push({
-                id: "radio-rne1",
-                title: "Radio Nacional (rne1)",
-                url: "https://rtvelivestream.rtve.es/rtvesec/rne/rne_r1_main.m3u8",
-                country: "ES",
-                tags: ["News", "Talk"]
-            });
-            this.library.stations.push({
-                id: "radio-rne2",
-                title: "Radio Clasica (rne2)",
-                url: "https://rtvelivestream.rtve.es/rtvesec/rne/rne_r2_main.m3u8",
-                country: "ES",
-                tags: ["Classical"]
-            });
-            this.library.stations.push({
-                id: "lot-radio",
-                title: "The Lot Radio",
-                url: "https://livepeercdn.studio/hls/85c28sa2o8wppm58/index.m3u8",
-                country: "US",
-                tags: ["Electronic", "Techno"]
-            });
-            this.library.stations.push({
-                id: "kiosk-radio",
-                title: "Kiosk Radio",
-                url: "https://play.streamnerd.nl/kioskradio/kioskradio/playlist.m3u8",
-                country: "BE",
-                tags: ["Electronic", "Techno"]
-            });
-        }
+        this.addEventListeners();
+    }
+
+    private addEventListeners(): void {
+        const importButton = document.querySelector<HTMLButtonElement>("#import-library-btn");
+        const fileInput = document.querySelector<HTMLInputElement>("#import-file")!;
+
+        importButton?.addEventListener("click", () => { fileInput.click(); });
+
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+
+            this.library = await importLibrary(file);
+
+            saveLibrary(this.library);
+
+            this.render();
+        });
     }
 
     public render(): void {
