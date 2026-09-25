@@ -125,7 +125,6 @@ export class RadioLibrary {
         return collection?.toggleStation(stationId) ?? false;
     }
 
-
     getStation(stationId: string): RadioStation | undefined {
         return this.stations.find(
             station => station.id === stationId

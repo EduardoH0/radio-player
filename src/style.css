@@ -93,15 +93,16 @@ button {
     gap: 10px;
 }
 .bottom-nav-btn {
-    height: 90%;
-    aspect-ratio: 1 / 1;
+    height: 80%;
+    aspect-ratio: 1/1;
 }
 #my-favorites-btn {
-    background-color: var(--color-5);
-}
-#my-library-btn {
     background-color: var(--color-6);
 }
+#my-library-btn {
+    background-color: var(--color-5);
+}
+
 #views{
     position: relative;
     flex-grow: 1;
@@ -159,6 +160,7 @@ button {
 }
 .stations-left {
     visibility: hidden;
+    flex-shrink: 0;
 }
 .station-left svg,
 .collection-left svg {
@@ -182,6 +184,7 @@ button {
 }
 .station-title,
 .collection-title {
+    flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

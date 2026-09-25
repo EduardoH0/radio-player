@@ -17,7 +17,7 @@ interface LoadedLibraryData {
 }
 
 
-export function loadLibrary(): RadioLibrary | null {
+export function loadLibrary(): RadioLibrary {
     const value = localStorage.getItem(STORAGE_KEY);
 
     if (!value) {
@@ -40,6 +40,7 @@ export function loadLibrary(): RadioLibrary | null {
         collections
     );
 }
+
 
 export function saveLibrary(library: RadioLibrary): void {
     localStorage.setItem(

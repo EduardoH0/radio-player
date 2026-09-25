@@ -43,12 +43,12 @@ export class App {
 
     private addEventListeners(): void {
         const importButton =
-            document.querySelector(
+            document.querySelector<HTMLButtonElement>(
                 "#import-library-btn"
             );
 
         const fileInput =
-            document.querySelector(
+            document.querySelector<HTMLInputElement>(
                 "#import-file"
             )!;
 
