@@ -12,10 +12,23 @@
             <button id="import-library-btn"></button>
             <input id="import-file" type="file" accept="application/json,.json" hidden>
         </div>
-        <div id="stations-container">
-            <div id="stations"></div>
+
+        <div id="views">
+            <div id="favorite-view" class="view active">
+                <div class="stations" id="favorite-stations"></div>
+            </div>
+            <div id="library-view" class="view">
+                <div class="collections" id="collections"></div>
+            </div>
+            <div id="collection-view" class="view">
+                <div class="stations" id="collection-stations"></div>
+            </div>
         </div>
-        <div class="nav" id="bottom-nav"></div>
+
+        <div class="nav" id="bottom-nav">
+            <button class="bottom-nav-btn" id="my-favorites-btn"></button>
+            <button class="bottom-nav-btn" id="my-library-btn"></button>
+        </div>
 
         <div id="player">
             <div id="player-row-1"> 
