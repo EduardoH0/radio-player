@@ -3,8 +3,7 @@ import type { RadioStation } from "../models/radio-station";
 
 
 type StationClickHandler = (
-    station: RadioStation,
-    element: HTMLDivElement
+    station: RadioStation
 ) => void;
 
 export function createStationElement(
@@ -18,7 +17,7 @@ export function createStationElement(
 
     element.innerHTML = `
         <div class="station-left">
-            <svg viewBox="0 0 512 512" class="ionicon"><path d="m96 448 320-192L96 64z"/></svg>
+            <svg viewBox="0 0 512 512"><path d="m96 448 320-192L96 64z"/></svg>
         </div>
 
         <div class="station-content">
@@ -41,13 +40,13 @@ export function createStationElement(
     element.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            onClick(station, element);
+            onClick(station);
         }
     });
 
     element.addEventListener(
         "click",
-        () => { onClick(station, element); }
+        () => { onClick(station); }
     );
 
     return element;
