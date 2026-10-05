@@ -2,13 +2,9 @@
 import type { RadioStation } from "../models/radio-station";
 
 
-type StationClickHandler = (
-    station: RadioStation
-) => void;
-
 export function createStationElement(
     station: RadioStation,
-    onClick: StationClickHandler,
+    onSelect: (station: RadioStation) => void,
 ): HTMLDivElement {
 
     const element = document.createElement("div");
@@ -40,13 +36,13 @@ export function createStationElement(
     element.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            onClick(station);
+            onSelect(station);
         }
     });
 
     element.addEventListener(
         "click",
-        () => { onClick(station); }
+        () => { onSelect(station); }
     );
 
     return element;

@@ -2,13 +2,9 @@
 import type { Collection } from "../models/radio-collection";
 
 
-type CollectionClickHandler = (
-    collectionId: string
-) => void;
-
 export function createCollectionElement(
     collection: Collection,
-    onClick: CollectionClickHandler,
+    onSelect: (collectionId: string) => void,
 ): HTMLDivElement {
 
     const element = document.createElement("div");
@@ -36,13 +32,13 @@ export function createCollectionElement(
     element.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            onClick(collection.id);
+            onSelect(collection.id);
         }
     });
 
     element.addEventListener(
         "click",
-        () => { onClick(collection.id); }
+        () => { onSelect(collection.id); }
     );
 
     return element;
