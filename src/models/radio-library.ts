@@ -34,6 +34,10 @@ export class RadioLibrary {
         );
     }
 
+    isFavorite(stationId: string): boolean {
+        return this.getCollection(FAVORITES_COLLECTION_ID)!.containsStation(stationId);
+    }
+
     getCollection(id: string): RadioCollection | undefined {
         return this.collections.find(
             collection => collection.id === id
@@ -130,4 +134,7 @@ export class RadioLibrary {
             station => station.id === stationId
         );
     }
+
+    // TODO: ensure favorites on new RadioLibrary
+    ensureFavorites(): void {}
 }
