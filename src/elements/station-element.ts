@@ -5,6 +5,7 @@ import type { RadioStation } from "../models/radio-station";
 export function createStationElement(
     station: RadioStation,
     onSelect: (station: RadioStation) => void,
+    onOpenActions: (station: RadioStation) => void,
 ): HTMLDivElement {
 
     const element = document.createElement("div");
@@ -29,7 +30,13 @@ export function createStationElement(
             </div>
 
             <div class="station-row-2">
-                ${station.tags?.join(" · ") ?? ""}
+                <span class="station-tags">
+                    ${station.tags?.join(" · ") ?? ""}
+                </span>
+                
+                <button class="station-actions-trigger">
+                    ...
+                </button>
             </div>
     `;
 
@@ -44,6 +51,12 @@ export function createStationElement(
         "click",
         () => { onSelect(station); }
     );
+
+    element.querySelector<HTMLButtonElement>(".station-actions-trigger")
+        ?.addEventListener("click", event => {
+            event.stopPropagation();
+            onOpenActions(station);
+    });
 
     return element;
 }

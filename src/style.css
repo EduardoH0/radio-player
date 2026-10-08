@@ -31,6 +31,10 @@
     font-weight: 700;
 }
 
+[hidden] {
+    display: none !important
+}
+
 * {
     padding: 0;
     margin: 0;
@@ -53,6 +57,9 @@ button {
     border: none;
     background-color: transparent;
     box-sizing: border-box;
+    font-family: "Space Grotesk";
+    -webkit-tap-highlight-color: transparent;
+    color: inherit;
 }
 
 #app {
@@ -158,9 +165,8 @@ button {
     width: 30px;
     flex-shrink: 0;
 }
-.stations-left {
+.station-left {
     visibility: hidden;
-    flex-shrink: 0;
 }
 .station-left svg,
 .collection-left svg {
@@ -178,23 +184,33 @@ button {
     pointer-events: none;
 }
 .station-row-1,
+.station-row-2,
 .collection-row-1 {
     width: 100%;
     display: flex;
 }
 .station-title,
+.station-tags,
 .collection-title {
     flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-
+}
+.station-title,
+.collection-title {
     font-weight: 700;
     text-transform: uppercase;
 }
-.station-secondary {
+.station-secondary,
+.station-actions-trigger {
     flex-shrink: 0;
     margin-left: auto;
+}
+.station-actions-trigger {
+    font-size: 20px;
+    padding: 1px 2px 1px 15px;
+    pointer-events: auto;
 }
 
 #player {
@@ -246,3 +262,46 @@ button {
     margin-left: auto;
 }
 
+.action-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+}
+.action-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+}
+.action-sheet-list {
+    --margin: 10px;
+    position: absolute;
+    left: var(--margin);
+    right: var(--margin);
+    bottom: 0;
+    max-width: 400px;
+    margin-inline: auto;
+    max-height: 70vh;
+    padding: 8px 0;
+    border: 2px solid var(--color-1);
+    border-bottom: none;
+    background: var(--color-3);
+    overflow-y: auto;
+
+    transform: translateY(100%);
+    transition: transform 0.2s ease-out;
+}
+.action-sheet-list::-webkit-scrollbar {
+    display: none;
+}
+.action-sheet.open .action-sheet-list {
+    transform: translateY(0);
+}
+.action-sheet-item {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    text-align: left;
+    border: none;
+    background: none;
+    font-size: 1rem;
+}

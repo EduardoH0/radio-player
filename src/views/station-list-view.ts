@@ -6,10 +6,16 @@ import { createStationElement } from "../elements/station-element";
 export class StationListView {
     private readonly container: HTMLDivElement;
     private readonly onSelect: (station: RadioStation) => void;
+    private readonly onOpenActions: (station: RadioStation) => void;
 
-    constructor(container: HTMLDivElement, onSelect: (station: RadioStation) => void) {
+    constructor(
+        container: HTMLDivElement,
+        onSelect: (station: RadioStation) => void,
+        onOpenActions: (station: RadioStation) => void
+    ) {
         this.container = container;
         this.onSelect = onSelect;
+        this.onOpenActions = onOpenActions;
     }
 
     render(stations: RadioStation[], activeStationId: string | null): void {
@@ -18,7 +24,8 @@ export class StationListView {
         for (const station of stations) {
             const element = createStationElement(
                 station,
-                this.onSelect
+                this.onSelect,
+                this.onOpenActions
             );
 
             element.dataset.stationId = station.id;

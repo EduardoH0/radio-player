@@ -15,10 +15,13 @@ import { ViewManager } from './views/view-manager';
 import { StationListView, setActiveStation } from './views/station-list-view';
 import { CollectionListView, setActiveCollection } from './views/collection-list-view';
 
+import { type SheetAction, ActionSheet } from './elements/action-sheet';
+
 
 export class App {
     private readonly player: Player;
     private readonly viewManager: ViewManager;
+    private readonly actionSheet: ActionSheet;
 
     private readonly favoritesView: StationListView;
     private readonly collectionStationsView: StationListView;
@@ -27,21 +30,24 @@ export class App {
     private library: RadioLibrary;
     private activeStationId: string | null = null;
     private activeCollectionId: string | null = null;
-    private openCollection: boolean = false;
+    private openCollectionId: string | null = null;
 
     constructor() {
         this.player = new Player();
         this.viewManager = new ViewManager();
+        this.actionSheet = new ActionSheet();
         this.library = loadLibrary();
 
         this.favoritesView = new StationListView(
             document.querySelector<HTMLDivElement>("#favorite-stations")!,
-            station => { void this.selectStation(station); }
+            station => { void this.selectStation(station); },
+            station => { this.openStationMenu(station, { inCollectionId: null }) }
         );
 
         this.collectionStationsView = new StationListView(
             document.querySelector<HTMLDivElement>("#collection-stations")!,
-            station => { void this.selectStation(station); }
+            station => { void this.selectStation(station); },
+            station => { this.openStationMenu(station, { inCollectionId: this.openCollectionId }) }
         );
 
         this.libraryView = new CollectionListView(
@@ -74,7 +80,7 @@ export class App {
     private reset(): void {
         this.activeStationId = null;
         this.activeCollectionId = null;
-        this.openCollection = false;
+        this.openCollectionId = null;
 
         this.renderFavorites();
         this.renderLibrary();
@@ -84,9 +90,9 @@ export class App {
 
     private handleLibraryClick(): void {
         if (this.viewManager.mode === "collection") {
-            this.openCollection = false;
+            this.openCollectionId = null;
             this.viewManager.show("library");
-        } else if (this.openCollection) {
+        } else if (this.openCollectionId) {
             this.viewManager.show("collection");
         } else {
             this.viewManager.show("library");
@@ -128,7 +134,7 @@ export class App {
     }
 
     private async selectCollection(collectionId: string): Promise<void> {
-        this.openCollection = true;
+        this.openCollectionId = collectionId;
 
         this.renderCollection(collectionId);
         this.viewManager.show("collection");
@@ -141,5 +147,96 @@ export class App {
         }
 
         this.activeCollectionId = collectionId;
+    }
+
+    private openStationMenu(
+        station: RadioStation,
+        context: { inCollectionId: string | null }
+    ): void {
+        const isFavorite = this.library.isFavorite(station.id); 
+
+        const actions: SheetAction[] = [
+            {
+                id: "toggle-favorite",
+                label: isFavorite ? "Remove from favorites" : "Add to favorites"
+            },
+            {
+                id: "add-to-collection",
+                label: "Add to collection..."
+            }
+        ]
+
+        if (context.inCollectionId) {
+            actions.push({
+                id: "remove-from-collection",
+                label: "Remove from this collection"
+            });
+        }
+
+        this.actionSheet.open(actions, actionId => {
+            this.handleStationAction(actionId, station, context);
+        });
+    }
+
+    handleStationAction(
+        actionId: string,
+        station: RadioStation,
+        context: { inCollectionId: string | null }    
+    ): void {
+        switch (actionId) {
+            case "toggle-favorite":
+                this.library.toggleStationFromCollection(
+                    FAVORITES_COLLECTION_ID,
+                    station.id
+                );
+                this.actionSheet.close();
+                break;
+
+            case "add-to-collection":
+                this.openCollectionPicker(station);
+                return;
+
+            case "remove-from-collection":
+                if (context.inCollectionId) {
+                    this.library.toggleStationFromCollection(
+                        context.inCollectionId,
+                        station.id
+                    );
+                }
+                this.actionSheet.close();
+                break;
+
+            default:
+                this.actionSheet.close();
+                return;
+        }
+
+        saveLibrary(this.library);
+        this.renderFavorites();
+        if (this.openCollectionId) {
+            this.renderCollection(this.openCollectionId);
+        }
+    }
+
+    openCollectionPicker(station: RadioStation): void {
+        const actions: SheetAction[] = this.library.userCollections.map(collection => (
+            {
+                id: collection.id,
+                label: collection.containsStation(station.id)
+                    ? `✓ ${collection.name}`
+                    : collection.name,
+            }
+        ));
+
+        this.actionSheet.open(actions, collectionId => {
+            this.library.toggleStationFromCollection(collectionId, station.id);
+            saveLibrary(this.library);
+
+            if (this.openCollectionId) {
+                this.renderCollection(this.openCollectionId);
+            }
+
+            this.actionSheet.close();
+        });
     }
 }
