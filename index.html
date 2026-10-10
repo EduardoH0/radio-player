@@ -14,20 +14,58 @@
         </div>
 
         <div id="views">
-            <div id="favorite-view" class="view active">
-                <div class="stations" id="favorite-stations"></div>
+            <div id="favorite-view" class="view">
+                <div class="view-header">
+                    <h1 class="view-title" id="favorite-view-title">Favorites</h1>
+                </div>
+                <div class="view-content">
+                    <div class="stations" id="favorite-stations"></div>
+                </div>
             </div>
             <div id="library-view" class="view">
-                <div class="collections" id="collections"></div>
+                <div class="view-header">
+                    <h1 class="view-title" id="library-view-title">Library</h1>
+                </div>
+                <div class="view-content">
+                    <div class="collections" id="collections"></div>
+                </div>
             </div>
             <div id="collection-view" class="view">
-                <div class="stations" id="collection-stations"></div>
+                <div class="view-header">
+                    <h1 class="view-title" id="collection-view-title"></h1>
+                </div>
+                <div class="view-content">
+                    <div class="stations" id="collection-stations"></div>
+                </div>
             </div>
         </div>
 
         <div class="nav" id="bottom-nav">
-            <button class="bottom-nav-btn" id="my-favorites-btn"></button>
-            <button class="bottom-nav-btn" id="my-library-btn"></button>
+            <button class="bottom-nav-btn view-btn" id="favorite-view-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <g transform="translate(25 25)">
+                        <path id="star-fill" d="M496 203.3H312.36L256 32l-56.36 171.3H16l150.21 105.4-58.5 171.3L256 373.84 404.29 480l-58.61-171.3Z"
+                            fill="none" stroke="none" stroke-width="32px"/>
+                    </g>
+                    <path d="M496 203.3H312.36L256 32l-56.36 171.3H16l150.21 105.4-58.5 171.3L256 373.84 404.29 480l-58.61-171.3Z"
+                        fill="none" stroke="currentColor" stroke-width="32px"/>
+                </svg>
+                <span>Favorites</span>
+            </button>
+            <button class="bottom-nav-btn view-btn" id="library-view-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <g transform="translate(20 25)">
+                        <rect id="book-1-fill" x="40" y="128" width="90" height="350" fill="none" stroke="none" stroke-width="32px"/>
+                        <rect id="book-2-fill" x="190" y="40" width="102" height="440" fill="none" stroke="none" stroke-width="32px"/>
+                    </g>
+                    <rect x="40" y="128" width="90" height="350" fill="none" stroke="currentColor" stroke-width="32px"/>
+                    <rect x="190" y="40" width="102" height="440" fill="none" stroke="currentColor" stroke-width="32px"/>
+                    <g transform="rotate(-8 303 420)">
+                        <rect x="380" y="155" width="90" height="335" fill="none" stroke="currentColor" stroke-width="32px"/>
+                    </g>
+                </svg>
+                <span>Library</span>
+            </button>
         </div>
 
         <div id="player">

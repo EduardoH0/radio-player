@@ -39,12 +39,14 @@ export class App {
         this.library = loadLibrary();
 
         this.favoritesView = new StationListView(
+            document.querySelector<HTMLDivElement>("#favorite-view-title")!,
             document.querySelector<HTMLDivElement>("#favorite-stations")!,
             station => { void this.selectStation(station); },
             station => { this.openStationMenu(station, { inCollectionId: null }) }
         );
 
         this.collectionStationsView = new StationListView(
+            document.querySelector<HTMLDivElement>("#collection-view-title")!,
             document.querySelector<HTMLDivElement>("#collection-stations")!,
             station => { void this.selectStation(station); },
             station => { this.openStationMenu(station, { inCollectionId: this.openCollectionId }) }
@@ -67,10 +69,10 @@ export class App {
     }
 
     private attachNavigation():void {
-        document.querySelector<HTMLButtonElement>("#my-library-btn")
+        document.querySelector<HTMLButtonElement>("#library-view-btn")
             ?.addEventListener("click", () => { this.handleLibraryClick(); });
 
-        document.querySelector<HTMLButtonElement>("#my-favorites-btn")
+        document.querySelector<HTMLButtonElement>("#favorite-view-btn")
             ?.addEventListener("click", () => {
                 this.activeCollectionId = null;
                 this.viewManager.show("favorites");
@@ -103,13 +105,15 @@ export class App {
         this.favoritesView.render(
             this.library.getCollectionStations(FAVORITES_COLLECTION_ID),
             this.activeStationId,
+            "Favorites"
         );
     }
 
     private renderCollection(collectionId: string): void {
         this.collectionStationsView.render(
             this.library.getCollectionStations(collectionId),
-            this.activeStationId
+            this.activeStationId,
+            this.library.getCollectionName(collectionId)
         );
     }
 

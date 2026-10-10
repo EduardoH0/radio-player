@@ -4,21 +4,28 @@ import { createStationElement } from "../elements/station-element";
 
 
 export class StationListView {
+    private readonly header: HTMLDivElement;
     private readonly container: HTMLDivElement;
     private readonly onSelect: (station: RadioStation) => void;
     private readonly onOpenActions: (station: RadioStation) => void;
 
     constructor(
+        header: HTMLDivElement,
         container: HTMLDivElement,
         onSelect: (station: RadioStation) => void,
         onOpenActions: (station: RadioStation) => void
     ) {
+        this.header = header;
         this.container = container;
         this.onSelect = onSelect;
         this.onOpenActions = onOpenActions;
     }
 
-    render(stations: RadioStation[], activeStationId: string | null): void {
+    render(
+        stations: RadioStation[],
+        activeStationId: string | null,
+        collectionName: string | null
+    ): void {
         this.container.replaceChildren();
 
         for (const station of stations) {
@@ -33,6 +40,8 @@ export class StationListView {
 
             this.container.appendChild(element);
         }
+
+        this.header.textContent = collectionName;
     }
 }
 
