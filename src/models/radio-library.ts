@@ -44,6 +44,16 @@ export class RadioLibrary {
         );
     }
 
+    getCollectionName(id: string): string {
+        if (id === ALL_STATIONS_COLLECTION_ID) {
+            return "All Stations";
+        }
+
+        return this.collections.find(
+            collection => collection.id === id
+        )?.name ?? "";
+    }
+
     getCollectionStations(collectionId: string): RadioStation[] {
         if (collectionId === ALL_STATIONS_COLLECTION_ID) {
             return this.stations;

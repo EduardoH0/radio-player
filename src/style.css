@@ -91,7 +91,7 @@ button {
 }
 #bottom-nav {
     width: 100%;
-    height: 70px;
+    height: 75px;
     border-top: 5px solid var(--color-1);
 
     display: flex;
@@ -100,14 +100,25 @@ button {
     gap: 10px;
 }
 .bottom-nav-btn {
-    height: 80%;
+    height: 90%;
     aspect-ratio: 1/1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
 }
-#my-favorites-btn {
-    background-color: var(--color-6);
+.view-btn.active {
+    font-weight: 500;
 }
-#my-library-btn {
-    background-color: var(--color-5);
+#favorite-view-btn.active svg #star-fill {
+    fill: var(--color-4);
+}
+#library-view-btn.active svg #book-1-fill {
+    fill: var(--color-5);
+}
+#library-view-btn.active svg #book-2-fill {
+    fill: var(--color-6);
 }
 
 #views{
@@ -120,18 +131,26 @@ button {
     display: none;
     position: relative;
     height: 100%;
+}
+.view.active {
+    display: block;
+}
+.view-header {
+    padding: 5px;
+    border-bottom: 1px solid var(--color-1);
+}
+.view-content {
+    position: relative;
+    height: 100%;
     --padding-x: 4px;
-    padding: 20px var(--padding-x) 100px;
+    padding: 10px var(--padding-x) 140px;
     box-sizing: border-box;
 
     overflow-y: auto;
     overscroll-behavior-y: contain; /* prevent scroll from propagating */
 }
-.view::-webkit-scrollbar {
+.view-content::-webkit-scrollbar {
     display: none;
-}
-.view.active {
-    display: block;
 }
 .stations, 
 .collections {
