@@ -71,6 +71,11 @@ button {
     flex-direction: column;
     align-items: center;
 }
+@media (display-mode: standalone) {
+    #app {
+        height: calc(100% - env(safe-area-inset-bottom));
+    }
+}
 .nav {
     padding: 4px 15px;
     box-sizing: border-box;
@@ -308,6 +313,11 @@ button {
 
     transform: translateY(100%);
     transition: transform 0.2s ease-out;
+}
+@media (display-mode: standalone) {
+    .action-sheet-list {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
 }
 .action-sheet-list::-webkit-scrollbar {
     display: none;
