@@ -3,6 +3,7 @@
 export interface SheetAction {
     id: string;
     label: string;
+    icon?: string;
     // destructive?: boolean;
 }
 
@@ -35,10 +36,21 @@ export class ActionSheet {
         for (const action of actions) {
             const item = document.createElement("button");
             item.className = "action-sheet-item";
-            // I could use something like this to ask for confirmation.
-            // Perhaps better inside each action...
-            // item.classList.toggle("destructive", Boolean(action.destructive));
-            item.textContent = action.label;
+
+            const icon = document.createElement("span");
+            icon.className = "action-sheet-item-icon";
+
+            if (action.icon) {
+                const image = document.createElement("img");
+                image.src = action.icon;
+                icon.appendChild(image);
+            }
+
+            const label = document.createElement("span");
+            label.className = "action-sheet-item-label";
+            label.textContent = action.label;
+
+            item.append(icon, label);
 
             item.addEventListener("click", () => {
                 this.onSelect?.(action.id);

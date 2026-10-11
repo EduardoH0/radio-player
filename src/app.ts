@@ -146,7 +146,7 @@ export class App {
         // Scroll only works when the element is visible (display != none).
         if (this.activeCollectionId !== collectionId) {
             requestAnimationFrame(() => {
-                document.querySelector("#collection-view")!.scrollTop = 0;
+                document.querySelector("#collection-view-content")!.scrollTop = 0;
             });
         }
 
@@ -226,9 +226,10 @@ export class App {
         const actions: SheetAction[] = this.library.userCollections.map(collection => (
             {
                 id: collection.id,
-                label: collection.containsStation(station.id)
-                    ? `✓ ${collection.name}`
-                    : collection.name,
+                label: collection.name,
+                icon: collection.containsStation(station.id)
+                    ? `${import.meta.env.BASE_URL}icons/checkmark.svg`
+                    : undefined,
             }
         ));
 
