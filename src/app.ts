@@ -16,12 +16,14 @@ import { StationListView, setActiveStation } from './views/station-list-view';
 import { CollectionListView, setActiveCollection } from './views/collection-list-view';
 
 import { type SheetAction, ActionSheet } from './elements/action-sheet';
+import { ConfirmationDialog } from './elements/confirmation-dialog';
 
 
 export class App {
     private readonly player: Player;
     private readonly viewManager: ViewManager;
     private readonly actionSheet: ActionSheet;
+    private readonly confirmationDialog: ConfirmationDialog;
 
     private readonly favoritesView: StationListView;
     private readonly collectionStationsView: StationListView;
@@ -36,6 +38,7 @@ export class App {
         this.player = new Player();
         this.viewManager = new ViewManager();
         this.actionSheet = new ActionSheet();
+        this.confirmationDialog = new ConfirmationDialog();
         this.library = loadLibrary();
 
         this.favoritesView = new StationListView(
@@ -162,31 +165,42 @@ export class App {
         const actions: SheetAction[] = [
             {
                 id: "toggle-favorite",
-                label: isFavorite ? "Remove from favorites" : "Add to favorites"
+                label: isFavorite ? "Remove from favorites" : "Add to favorites",
+                icon: isFavorite
+                    ? `${import.meta.env.BASE_URL}icons/star-negative.svg`
+                    : `${import.meta.env.BASE_URL}icons/star.svg`
             },
             {
                 id: "add-to-collection",
-                label: "Add to collection..."
-            }
+                label: "Add to collection...",
+                icon: `${import.meta.env.BASE_URL}icons/folder.svg`
+            },
         ]
 
-        if (context.inCollectionId) {
+        if (context.inCollectionId && context.inCollectionId !== ALL_STATIONS_COLLECTION_ID) {
             actions.push({
                 id: "remove-from-collection",
-                label: "Remove from this collection"
+                label: "Remove from this collection",
+                icon: `${import.meta.env.BASE_URL}icons/folder-negative.svg`
             });
         }
+
+        actions.push({
+            id: "delete-station",
+            label: "Delete station",
+            icon: `${import.meta.env.BASE_URL}icons/trash.svg`
+        });
 
         this.actionSheet.open(actions, actionId => {
             this.handleStationAction(actionId, station, context);
         });
     }
 
-    handleStationAction(
+    async handleStationAction(
         actionId: string,
         station: RadioStation,
         context: { inCollectionId: string | null }    
-    ): void {
+    ): Promise<void> {
         switch (actionId) {
             case "toggle-favorite":
                 this.library.toggleStationFromCollection(
@@ -209,6 +223,29 @@ export class App {
                 }
                 this.actionSheet.close();
                 break;
+
+            case "delete-station":
+                const confirmed = await this.confirmationDialog.open({
+                    title: "Delete station?",
+                    message: "Are you sure you want to delete?",
+                    confirmText: "Delete"
+                });
+
+                if (!confirmed) {
+                    break
+                }
+
+                this.library.deleteStation(station.id);
+                this.actionSheet.close();
+
+                if (this.activeStationId === station.id) {
+                    this.activeStationId = null;
+                    this.activeCollectionId = null;
+
+                    this.renderLibrary();
+                    this.player.reset();
+                }
+                break
 
             default:
                 this.actionSheet.close();
