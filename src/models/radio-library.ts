@@ -34,6 +34,19 @@ export class RadioLibrary {
         );
     }
 
+    deleteStation(stationId: string): void {
+        // Remove from collections
+        for (const collection of this.collections) {
+            this.toggleStationFromCollection(collection.id, stationId);
+        }
+        // Remove station
+        const index = this.stations.findIndex(
+            station => station.id === stationId
+        );
+        this.stations.splice(index, 1);
+        this.stationsById.delete(stationId);
+    }
+
     isFavorite(stationId: string): boolean {
         return this.getCollection(FAVORITES_COLLECTION_ID)!.containsStation(stationId);
     }

@@ -58,6 +58,14 @@ export class Player {
         this.updateUi();
     }
 
+    public reset(): void {
+        this.clearSource();
+        this.currentStation = null;
+
+        this.state = "idle";
+        this.updateUi();
+    }
+
     public async toggle(): Promise<void> {
         if (!this.currentStation) {
             return;
