@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import fs from "node:fs";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
     base: command === "build" ? "/radio-player/" : "/",
 
     server: command === "serve"
@@ -13,4 +13,4 @@ export default defineConfig({
             },
         }
         : undefined
-});
+}));
