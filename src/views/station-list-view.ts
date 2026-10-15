@@ -8,17 +8,20 @@ export class StationListView {
     private readonly container: HTMLDivElement;
     private readonly onSelect: (station: RadioStation) => void;
     private readonly onOpenActions: (station: RadioStation) => void;
+    private readonly scrollRoot?: HTMLElement | null;
 
     constructor(
         header: HTMLDivElement,
         container: HTMLDivElement,
         onSelect: (station: RadioStation) => void,
-        onOpenActions: (station: RadioStation) => void
+        onOpenActions: (station: RadioStation) => void,
+        scrollRoot?: HTMLElement | null,
     ) {
         this.header = header;
         this.container = container;
         this.onSelect = onSelect;
         this.onOpenActions = onOpenActions;
+        this.scrollRoot = scrollRoot;
     }
 
     render(
@@ -42,6 +45,16 @@ export class StationListView {
         }
 
         this.header.textContent = collectionName;
+    }
+
+    resetScroll(): void {
+        const scrollRoot = this.scrollRoot;
+
+        if (scrollRoot != null) {
+            requestAnimationFrame(() => {
+                scrollRoot.scrollTop = 0;
+            });
+        }
     }
 }
 

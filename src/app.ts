@@ -55,7 +55,8 @@ export class App {
             document.querySelector<HTMLDivElement>("#collection-view-title")!,
             document.querySelector<HTMLDivElement>("#collection-stations")!,
             station => { void this.selectStation(station); },
-            station => { this.openStationMenu(station, { inCollectionId: this.openCollectionId }) }
+            station => { this.openStationMenu(station, { inCollectionId: this.openCollectionId }) },
+            document.querySelector<HTMLDivElement>("#collection-view-content")
         );
 
         this.libraryView = new CollectionListView(
@@ -157,9 +158,7 @@ export class App {
 
         // Scroll only works when the element is visible (display != none).
         if (this.activeCollectionId !== collectionId) {
-            requestAnimationFrame(() => {
-                document.querySelector("#collection-view-content")!.scrollTop = 0;
-            });
+            this.collectionStationsView.resetScroll();
         }
 
         this.activeCollectionId = collectionId;
