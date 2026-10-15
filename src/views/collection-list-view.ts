@@ -1,15 +1,33 @@
 // collection-list-view.ts
 import type { Collection } from "../models/radio-collection";
 import { createCollectionElement } from "../elements/collection-element";
+import { type InputDialog } from "../elements/input-dialog";
+import { RadioCollection } from "../models/radio-collection";
 
 
 export class CollectionListView {
     private readonly container: HTMLDivElement;
+    private readonly inputDialog: InputDialog;
+    private readonly createCollectionButton: HTMLButtonElement;
     private readonly onSelect: (collectionId: string) => void;
+    private readonly onCreate: (collectionName: string) => void;
 
-    constructor(container: HTMLDivElement, onSelect: (collectionId: string) => void) {
+    constructor(
+        container: HTMLDivElement,
+        inputDialog: InputDialog,
+        onSelect: (collectionId: string) => void,
+        onCreate: (collectionName: string) => void,
+    ) {
         this.container = container;
+        this.inputDialog = inputDialog;
         this.onSelect = onSelect;
+        this.onCreate = onCreate;
+
+        this.createCollectionButton = 
+            document.querySelector<HTMLButtonElement>("#create-collection-btn")!;
+        this.createCollectionButton.addEventListener("click", () => {
+            this.createCollection();
+        });
     }
 
     render(collections: Collection[]): void {
@@ -26,6 +44,21 @@ export class CollectionListView {
             this.container.append(element);
         }
     }
+
+    private async createCollection(): Promise<RadioCollection | void> {
+        const name = await this.inputDialog.open({
+            title: "New collection",
+            placeholder: "Collection name",
+            confirmText: "Create"
+        });
+
+        if (name === null) {
+            return;
+        }
+
+        return this.onCreate(name);
+    }
+
 }
 
 export function setActiveCollection(collectionId: string | null): void {
