@@ -138,17 +138,35 @@ button {
     height: 100%;
 }
 .view.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 .view-header {
-    padding: 5px;
+    box-sizing: border-box;
+    padding: 5px 10px 5px 5px;
     border-bottom: 1px solid var(--color-1);
+    width: 330px;
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+}
+.view-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+#create-collection-btn {
+    margin-left: auto;
+    height: 20px;
+    width: 20px;
 }
 .view-content {
-    position: relative;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
     --padding-x: 4px;
-    padding: 10px var(--padding-x) 140px;
+    padding: 10px var(--padding-x) 100px;
     box-sizing: border-box;
 
     overflow-y: auto;
@@ -342,9 +360,16 @@ button {
 .action-sheet-item-icon {
     height: 20px;
     width: 20px;
+    flex-shrink: 0;
+}
+.action-sheet-item-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.confirmation-dialog {
+.confirmation-dialog,
+.input-dialog {
     position: fixed;
     inset: 0;
     z-index: 200;
@@ -353,15 +378,17 @@ button {
     align-items: center;
     justify-content: center;
 }
-.confirmation-dialog-backdrop {
+.confirmation-dialog-backdrop, 
+.input-dialog-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(0,0,0,0.7);
 }
-.confirmation-dialog-content {
+.confirmation-dialog-content,
+.input-dialog-content {
     position: relative;
     width: min(300px, calc(100% - 40px));
-    padding: 10px;
+    padding: 14px;
 
     border: 2px solid var(--color-1);
     background-color: var(--color-3);
@@ -370,13 +397,15 @@ button {
     flex-direction: column;
     gap: 10px;
 }
-.confirmation-dialog-actions {
+.confirmation-dialog-actions,
+.input-dialog-actions {
     flex: 0;
     display: flex;
     margin-left: auto;
     gap: 8px;
 }
-.confirmation-dialog-btn {
+.confirmation-dialog-btn, 
+.input-dialog-btn {
     font-size: 1.2rem;
     padding: 2px 6px;
     border: 2px solid var(--color-1);
@@ -385,7 +414,16 @@ button {
 #confirmation-dialog-btn-confirm {
     background-color: var(--color-6);
 }
-#confirmation-dialog-btn-cancel {
+#input-dialog-btn-confirm {
+    background-color: var(--color-4);
+}
+#confirmation-dialog-btn-cancel,
+#input-dialog-btn-cancel {
     color: var(--color-2);
     background-color: var(--color-5);
+}
+.input-dialog-input {
+    padding: 2px 8px;
+    box-sizing: border-box;
+    font-size: 1.2rem;
 }

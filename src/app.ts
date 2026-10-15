@@ -17,6 +17,7 @@ import { CollectionListView, setActiveCollection } from './views/collection-list
 
 import { type SheetAction, ActionSheet } from './elements/action-sheet';
 import { ConfirmationDialog } from './elements/confirmation-dialog';
+import { InputDialog } from './elements/input-dialog';
 
 
 export class App {
@@ -24,6 +25,7 @@ export class App {
     private readonly viewManager: ViewManager;
     private readonly actionSheet: ActionSheet;
     private readonly confirmationDialog: ConfirmationDialog;
+    private readonly inputDialog: InputDialog;
 
     private readonly favoritesView: StationListView;
     private readonly collectionStationsView: StationListView;
@@ -39,6 +41,7 @@ export class App {
         this.viewManager = new ViewManager();
         this.actionSheet = new ActionSheet();
         this.confirmationDialog = new ConfirmationDialog();
+        this.inputDialog = new InputDialog();
         this.library = loadLibrary();
 
         this.favoritesView = new StationListView(
@@ -57,7 +60,13 @@ export class App {
 
         this.libraryView = new CollectionListView(
             document.querySelector<HTMLDivElement>("#collections")!,
-            collectionId => { void this.selectCollection(collectionId); } 
+            this.inputDialog,
+            collectionId => { void this.selectCollection(collectionId); } ,
+            collectionName => { 
+                this.library.createCollection(collectionName);
+                saveLibrary(this.library);
+                this.renderLibrary();
+            }
         );
 
         this.attachNavigation();
