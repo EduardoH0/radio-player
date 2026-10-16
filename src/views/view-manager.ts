@@ -1,18 +1,6 @@
 export type ViewMode = "favorites" | "library" | "collection";
 
 
-const VIEW_SELECTORS: Record<ViewMode, string> = {
-    favorites: "#favorite-view",
-    library: "#library-view",
-    collection: "#collection-view"
-};
-
-const VIEW_BUTTONS_SELECTORS: Record<ViewMode, string> = {
-    favorites: "#favorite-view-btn",
-    library: "#library-view-btn",
-    collection: "#library-view-btn"
-}
-
 export class ViewManager {
     private current: ViewMode | null = null;
 
@@ -27,14 +15,18 @@ export class ViewManager {
 
         this.current = mode;
 
-        document.querySelectorAll(".view.active").forEach(view => {
-            view.classList.remove("active");
+        document.querySelectorAll<HTMLElement>("[data-view]").forEach(el => {
+            el.classList.toggle(
+                "active",
+                el.dataset.view?.split(" ").includes(mode) ?? false
+            );
         });
-        document.querySelectorAll(".view-btn.active").forEach(viewBtn => {
-            viewBtn.classList.remove("active");
-        });
+    }
 
-        document.querySelector(VIEW_SELECTORS[mode])?.classList.add("active");
-        document.querySelector(VIEW_BUTTONS_SELECTORS[mode])?.classList.add("active");
+    setCompactTitle(title: string | null): void {
+        const el = document.querySelector<HTMLSpanElement>("#top-nav-info-text");
+        if (!el) return;
+
+        el.textContent = title ?? "";
     }
 }

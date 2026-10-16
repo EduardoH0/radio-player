@@ -10,20 +10,23 @@
   <body>
     <div id="app">
         <div class="nav" id="top-nav">
+            <span id="top-nav-info-text" data-view="collection"></span>
             <button id="import-library-btn"></button>
             <input id="import-file" type="file" accept="application/json,.json" hidden>
         </div>
 
         <div id="views">
-            <div id="favorite-view" class="view">
+
+            <div id="favorite-view" class="view" data-view="favorites">
                 <div class="view-header">
                     <h1 class="view-title" id="favorite-view-title">Favorites</h1>
                 </div>
-                <div class="view-content">
+                <div class="view-content" id="favorite-view-content">
                     <div class="stations" id="favorite-stations"></div>
                 </div>
             </div>
-            <div id="library-view" class="view">
+
+            <div id="library-view" class="view" data-view="library">
                 <div class="view-header">
                     <h1 class="view-title" id="library-view-title">Library</h1>
                     <button id="create-collection-btn">
@@ -37,18 +40,20 @@
                     <div class="collections" id="collections"></div>
                 </div>
             </div>
-            <div id="collection-view" class="view">
-                <div class="view-header">
-                    <h1 class="view-title" id="collection-view-title"></h1>
-                </div>
+
+            <div id="collection-view" class="view" data-view="collection">
                 <div class="view-content" id="collection-view-content">
+                    <div class="view-header">
+                        <h1 class="view-title" id="collection-view-title"></h1>
+                    </div>
                     <div class="stations" id="collection-stations"></div>
                 </div>
             </div>
+
         </div>
 
         <div class="nav" id="bottom-nav">
-            <button class="bottom-nav-btn view-btn" id="favorite-view-btn">
+            <button class="bottom-nav-btn view-btn" id="favorite-view-btn" data-view="favorites">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                     <g transform="translate(25 25)">
                         <path id="star-fill" d="M496 203.3H312.36L256 32l-56.36 171.3H16l150.21 105.4-58.5 171.3L256 373.84 404.29 480l-58.61-171.3Z"
@@ -59,7 +64,7 @@
                 </svg>
                 <span>Favorites</span>
             </button>
-            <button class="bottom-nav-btn view-btn" id="library-view-btn">
+            <button class="bottom-nav-btn view-btn" id="library-view-btn" data-view="library collection">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                     <g transform="translate(20 25)">
                         <rect id="book-1-fill" x="40" y="128" width="90" height="350" fill="none" stroke="none" stroke-width="32px"/>

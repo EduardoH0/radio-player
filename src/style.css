@@ -77,19 +77,45 @@ button {
     }
 }
 .nav {
-    padding: 4px 15px;
+    --inline-padding: 15px;
+    padding: 4px var(--inline-padding);
     box-sizing: border-box;
     display: flex;
     align-items: center;
     flex-shrink: 0;
 }
 #top-nav {
+    --height: 50px;
+    --side-elements-width: calc(var(--height) * 0.6);
     width: 100%;
-    height: 50px;
+    height: var(--height);
     border-bottom: 5px solid var(--color-1);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#top-nav-info-text {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: max-content;
+    max-width: min(
+        300px,
+        calc(100% - 2 * var(--side-elements-width, 0px) - 3 * var(--inline-padding))
+    );
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+#top-nav-info-text.active {
+    display: block;
 }
 #import-library-btn {
-    height: 80%;
+    width: var(--side-elements-width);
     aspect-ratio: 1/1;
     margin-left: auto;
     background-color: var(--color-6);
@@ -150,6 +176,9 @@ button {
 
     display: flex;
     align-items: center;
+}
+#collection-view .view-header {
+    margin-bottom: 10px;
 }
 .view-title {
     display: -webkit-box;
