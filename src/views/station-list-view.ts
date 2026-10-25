@@ -40,7 +40,7 @@ export class StationListView {
     ): void {
         this.container.replaceChildren();
         // Scroll only works when the element is visible (display != none).
-        this.resetScroll();
+        // this.resetScroll();
         // Reset on render to avoid flicker with posible former currentTitle
         this.onCompactTitleChange?.();
 
@@ -61,7 +61,7 @@ export class StationListView {
         this.currentTitle = collectionName;
     }
 
-    private resetScroll(): void {
+    resetScroll(): void {
         this.scrolledPast = false;
         const scrollRoot = this.scrollRoot;
 

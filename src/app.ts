@@ -179,6 +179,8 @@ export class App {
         this.openCollectionId = collectionId;
 
         this.renderCollection(collectionId);
+        // Scroll only works when the element is visible (display != none).
+        this.collectionStationsView.resetScroll();
         this.viewManager.show("collection");
 
         this.activeCollectionId = collectionId;
@@ -270,7 +272,6 @@ export class App {
                     this.activeStationId = null;
                     this.activeCollectionId = null;
 
-                    this.renderLibrary();
                     this.player.reset();
                 }
                 break
@@ -282,6 +283,7 @@ export class App {
 
         saveLibrary(this.library);
         this.renderFavorites();
+        this.renderLibrary();
         if (this.openCollectionId) {
             this.renderCollection(this.openCollectionId);
         }
