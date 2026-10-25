@@ -18,6 +18,7 @@ import { CollectionListView, setActiveCollection } from './views/collection-list
 import { type SheetAction, ActionSheet } from './elements/action-sheet';
 import { ConfirmationDialog } from './elements/confirmation-dialog';
 import { InputDialog } from './elements/input-dialog';
+import { TopBar } from './elements/top-bar';
 
 
 export class App {
@@ -26,6 +27,7 @@ export class App {
     private readonly actionSheet: ActionSheet;
     private readonly confirmationDialog: ConfirmationDialog;
     private readonly inputDialog: InputDialog;
+    private readonly topBar: TopBar;
 
     private readonly favoritesView: StationListView;
     private readonly collectionStationsView: StationListView;
@@ -44,6 +46,15 @@ export class App {
         this.inputDialog = new InputDialog();
         this.library = loadLibrary();
 
+        this.topBar = new TopBar(
+            document.querySelector<HTMLSpanElement>("#top-nav-info-text")!,
+            document.querySelector<HTMLButtonElement>("#top-nav-search-btn")!,
+            document.querySelector<HTMLDivElement>("#top-nav-search-field")!,
+            document.querySelector<HTMLInputElement>("#top-nav-search-input")!,
+            document.querySelector<HTMLButtonElement>("#top-nav-clear-search-btn")!,
+            query => { this.viewManager.activeView?.filter(query); }
+        );
+
         this.favoritesView = new StationListView(
             document.querySelector<HTMLDivElement>("#favorite-view-title")!,
             document.querySelector<HTMLDivElement>("#favorite-stations")!,
@@ -57,7 +68,7 @@ export class App {
             station => { void this.selectStation(station); },
             station => { this.openStationMenu(station, { inCollectionId: this.openCollectionId }) },
             document.querySelector<HTMLDivElement>("#collection-view-content"),
-            title => { this.viewManager.setCompactTitle(title); }
+            () => this.syncTopBar()
         );
 
         this.libraryView = new CollectionListView(
@@ -71,6 +82,15 @@ export class App {
             }
         );
 
+        this.viewManager.register("favorites", this.favoritesView);
+        this.viewManager.register("collection", this.collectionStationsView);
+        this.viewManager.register("library", this.libraryView);
+
+        this.viewManager.onShow = () => {
+            this.topBar.closeSearch();
+            this.syncTopBar();
+        }
+
         this.attachNavigation();
 
         attachImportControl(library => {
@@ -82,7 +102,11 @@ export class App {
         this.reset();
     }
 
-    private attachNavigation():void {
+    private syncTopBar(): void {
+        this.topBar.setTitle(this.viewManager.activeView?.compactTitle ?? null);
+    }
+
+    private attachNavigation(): void {
         document.querySelector<HTMLButtonElement>("#library-view-btn")
             ?.addEventListener("click", () => { this.handleLibraryClick(); });
 

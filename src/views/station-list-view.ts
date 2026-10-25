@@ -9,9 +9,11 @@ export class StationListView {
     private readonly onSelect: (station: RadioStation) => void;
     private readonly onOpenActions: (station: RadioStation) => void;
     private readonly scrollRoot?: HTMLElement | null;
-    private readonly onCompactTitleChange?: (title: string | null) => void;
+    private readonly onCompactTitleChange?: () => void;
 
     private currentTitle: string | null = null;
+    private scrolledPast: boolean = false;
+    private query: string = "";
 
     constructor(
         header: HTMLDivElement,
@@ -19,7 +21,7 @@ export class StationListView {
         onSelect: (station: RadioStation) => void,
         onOpenActions: (station: RadioStation) => void,
         scrollRoot?: HTMLElement | null,
-        onCompactTitleChange?: (title: string | null) => void,
+        onCompactTitleChange?: () => void,
     ) {
         this.header = header;
         this.container = container;
@@ -40,7 +42,7 @@ export class StationListView {
         // Scroll only works when the element is visible (display != none).
         this.resetScroll();
         // Reset on render to avoid flicker with posible former currentTitle
-        this.onCompactTitleChange?.(null);
+        this.onCompactTitleChange?.();
 
         for (const station of stations) {
             const element = createStationElement(
@@ -60,6 +62,7 @@ export class StationListView {
     }
 
     private resetScroll(): void {
+        this.scrolledPast = false;
         const scrollRoot = this.scrollRoot;
 
         if (scrollRoot != null) {
@@ -67,6 +70,10 @@ export class StationListView {
                 scrollRoot.scrollTop = 0;
             });
         }
+    }
+
+    get compactTitle(): string | null {
+        return this.scrolledPast ? this.currentTitle : null;
     }
 
     private observeHeader(): void {
@@ -80,14 +87,28 @@ export class StationListView {
             ([entry]) => {
                 // Do not let observer run callback if container's display == none
                 if (scrollRoot.getClientRects().length === 0) return;
+                
+                this.scrolledPast = !entry.isIntersecting;
 
-                this.onCompactTitleChange
-                    ?.(entry.isIntersecting ? null : this.currentTitle);
+                this.onCompactTitleChange?.()
             },
             { root: this.scrollRoot, threshold: 0 },
         );
 
         observer.observe(this.header);
+    }
+
+    filter(query: string): void {
+        this.query = query.trim().toLowerCase();
+
+        this.container.querySelectorAll<HTMLElement>(".station").forEach(el => {
+            const words = (el.textContent ?? "").toLowerCase().split(/\s+/);
+            const tokens = this.query.split(/\s+/).filter(Boolean);
+
+            el.hidden = !tokens.every(token =>
+                words.some(word => word.startsWith(token))
+            );
+        });
     }
 }
 

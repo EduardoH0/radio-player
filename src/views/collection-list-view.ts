@@ -12,6 +12,8 @@ export class CollectionListView {
     private readonly onSelect: (collectionId: string) => void;
     private readonly onCreate: (collectionName: string) => void;
 
+    private query: string = "";
+
     constructor(
         container: HTMLDivElement,
         inputDialog: InputDialog,
@@ -57,6 +59,19 @@ export class CollectionListView {
         }
 
         return this.onCreate(name);
+    }
+
+    filter(query: string): void {
+        this.query = query.trim().toLowerCase();
+
+        this.container.querySelectorAll<HTMLElement>(".collection").forEach(el => {
+            const words = (el.textContent ?? "").toLowerCase().split(/\s+/);
+            const tokens = this.query.split(/\s+/).filter(Boolean);
+
+            el.hidden = !tokens.every(token =>
+                words.some(word => word.startsWith(token))
+            );
+        });
     }
 
 }
