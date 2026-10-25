@@ -96,7 +96,6 @@ button {
     justify-content: center;
 }
 #top-nav-info-text {
-    display: none;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -111,14 +110,69 @@ button {
     text-overflow: ellipsis;
     font-weight: 500;
 }
-#top-nav-info-text.active {
-    display: block;
+#top-nav-search-field {
+    --size-close: 26px;
+    --right-margin: 2px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: max-content;
+    max-width: min(
+        300px,
+        calc(100% - 2 * var(--side-elements-width, 0px) - 3 * var(--inline-padding))
+    );
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
 }
+#top-nav-search-input {
+    font-size: 1rem;
+    padding: 2px 8px;
+    padding-right: calc(4px + var(--size-close) + var(--right-margin));
+    box-sizing: border-box;
+    border-radius: 0;
+    outline: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#top-nav-clear-search-btn {
+    position: absolute;
+    right: var(--right-margin);
+    height: var(--size-close);
+    aspect-ratio: 1/1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#top-nav-clear-search-btn svg {
+    width: 100%;
+    height: 100%;
+}
+#top-nav:has(#top-nav-search-field:not([hidden])) #search-btn-fill {
+    fill: var(--color-4);
+}
+
+#top-nav-search-btn,
 #import-library-btn {
     width: var(--side-elements-width);
     aspect-ratio: 1/1;
+    color: var(--color-1);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+#top-nav-search-btn {
     margin-left: auto;
+}
+#import-library-btn {
     background-color: var(--color-6);
+    margin-right: auto;
 }
 #bottom-nav {
     width: 100%;
@@ -455,4 +509,6 @@ button {
     padding: 2px 8px;
     box-sizing: border-box;
     font-size: 1.2rem;
+    border-radius: 0;
+    outline: 0;
 }
