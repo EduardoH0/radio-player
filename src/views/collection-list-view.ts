@@ -45,6 +45,9 @@ export class CollectionListView {
 
             this.container.append(element);
         }
+
+        // Apply current filter, if any, on render
+        this.filter(this.query);
     }
 
     private async createCollection(): Promise<RadioCollection | void> {

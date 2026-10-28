@@ -57,6 +57,8 @@ export class StationListView {
 
         this.header.textContent = collectionName;
         this.currentTitle = collectionName;
+
+        this.filter(this.query);
     }
 
     resetScroll(): void {
