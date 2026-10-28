@@ -72,10 +72,8 @@ export class InputDialog {
 
         this.root.hidden = false;
 
-        requestAnimationFrame(() => {  // request... not needed unless animated..
-            this.root.classList.add("open");
-            this.input.focus();
-        });
+        this.root.classList.add("open");
+        this.input.focus();
 
         return new Promise((resolve) => {
             this.resolve = resolve;
