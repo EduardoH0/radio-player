@@ -278,6 +278,9 @@ button {
     */
     scrollbar-gutter: stable;
 }
+#collection-view-content {
+    padding-top: 0;
+}
 .view-content::-webkit-scrollbar {
     display: block;
     width: calc(2 * var(--margin-left));
