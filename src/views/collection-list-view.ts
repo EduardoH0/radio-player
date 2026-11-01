@@ -10,6 +10,7 @@ export class CollectionListView {
     private readonly inputDialog: InputDialog;
     private readonly createCollectionButton: HTMLButtonElement;
     private readonly onSelect: (collectionId: string) => void;
+    private readonly onOpenActions: (collection: Collection) => void;
     private readonly onCreate: (collectionName: string) => void;
 
     private query: string = "";
@@ -18,11 +19,13 @@ export class CollectionListView {
         container: HTMLDivElement,
         inputDialog: InputDialog,
         onSelect: (collectionId: string) => void,
+        onOpenActions: (collection: Collection) => void,
         onCreate: (collectionName: string) => void,
     ) {
         this.container = container;
         this.inputDialog = inputDialog;
         this.onSelect = onSelect;
+        this.onOpenActions = onOpenActions;
         this.onCreate = onCreate;
 
         this.createCollectionButton = 
@@ -38,7 +41,8 @@ export class CollectionListView {
         for (const collection of collections) {
             const element = createCollectionElement(
                 collection,
-                this.onSelect
+                this.onSelect,
+                this.onOpenActions
             );
 
             element.dataset.collectionId = collection.id;

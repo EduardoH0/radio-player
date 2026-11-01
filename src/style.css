@@ -324,6 +324,9 @@ button {
     border: 2px solid var(--color-1);
     box-shadow: var(--padding-x) 4px var(--color-1);
 }
+.collection {
+    padding-right: 2px;
+}
 .station-left, 
 .collection-left {
     height: 100%;
@@ -368,14 +371,22 @@ button {
     text-transform: uppercase;
 }
 .station-secondary,
-.station-actions-trigger {
+.station-actions-trigger,
+.collection-actions-trigger {
     flex-shrink: 0;
     margin-left: auto;
 }
-.station-actions-trigger {
+.station-actions-trigger,
+.collection-actions-trigger {
     font-size: 20px;
     padding: 1px 2px 1px 15px;
     pointer-events: auto;
+}
+.collection-actions-trigger {
+    transform: rotate(-90deg); /* vertical '...' */
+}
+.collection[data-collection-id="all-stations"] .collection-actions-trigger {
+    display: none; /* remove all-station actions button till some action applies */
 }
 
 #player {

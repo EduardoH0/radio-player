@@ -5,6 +5,7 @@ import type { Collection } from "../models/radio-collection";
 export function createCollectionElement(
     collection: Collection,
     onSelect: (collectionId: string) => void,
+    onOpenActions: (collection: Collection) => void,
 ): HTMLDivElement {
 
     const element = document.createElement("div");
@@ -24,6 +25,10 @@ export function createCollectionElement(
                     ${collection.name}
                 </span>
 
+                <button class="collection-actions-trigger">
+                    ...
+                </button>
+
             </div>
 
         </div>
@@ -40,6 +45,12 @@ export function createCollectionElement(
         "click",
         () => { onSelect(collection.id); }
     );
+
+    element.querySelector<HTMLButtonElement>(".collection-actions-trigger")
+        ?.addEventListener("click", event => {
+            event.stopPropagation();
+            onOpenActions(collection);
+    });
 
     return element;
 }
