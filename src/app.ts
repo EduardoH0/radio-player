@@ -75,6 +75,7 @@ export class App {
             document.querySelector<HTMLDivElement>("#collections")!,
             this.inputDialog,
             collectionId => { void this.selectCollection(collectionId); } ,
+            collection => { this.openCollectionMenu(collection) },
             collectionName => { 
                 this.library.createCollection(collectionName);
                 saveLibrary(this.library);
@@ -184,6 +185,78 @@ export class App {
         this.viewManager.show("collection");
 
         this.activeCollectionId = collectionId;
+    }
+
+    private openCollectionMenu(
+        collection: Collection
+    ): void {
+        const actions: SheetAction[] = [];
+
+        if (collection.id !== ALL_STATIONS_COLLECTION_ID) {
+            actions.push({
+                id: "rename-collection",
+                label: "Rename collection",
+                icon: `${import.meta.env.BASE_URL}icons/edit.svg`
+            }, 
+            {
+                id: "delete-collection",
+                label: "Delete collection",
+                icon: `${import.meta.env.BASE_URL}icons/trash.svg`
+            });
+        }
+
+        this.actionSheet.open(actions, actionId => {
+            this.handleCollectionAction(actionId, collection);
+        });
+
+    }
+
+    async handleCollectionAction(
+        actionId: string,
+        collection: Collection,
+    ): Promise<void> {
+        switch (actionId) {
+            case "rename-collection":
+                const name = await this.inputDialog.open({
+                    title: "Rename collection",
+                    placeholder: "Collection name",
+                    confirmText: "Rename"
+                });
+
+                if (name === null) {
+                    return;
+                }
+
+                this.library.renameCollection(collection.id, name);
+                this.actionSheet.close();
+                break
+
+            case "delete-collection":
+                const confirmed = await this.confirmationDialog.open({
+                    title: "Delete collection?",
+                    message: "Are you sure you want to delete?",
+                    confirmText: "Delete"
+                });
+
+                if (!confirmed) {
+                    break
+                }
+
+                this.library.deleteCollection(collection.id);
+                this.actionSheet.close();
+
+                if (this.activeCollectionId == collection.id) {
+                    this.activeCollectionId = null;
+                }
+
+                break
+
+            default:
+                this.actionSheet.close();
+                return;
+        }
+        saveLibrary(this.library);
+        this.renderLibrary();
     }
 
     private openStationMenu(

@@ -16,6 +16,10 @@ export class RadioCollection {
         this.stationIds = stationIds;
     }
 
+    rename(name: string): void {
+        this.name = name;
+    }
+
     containsStation(stationId: string): boolean {
         return this.stationIds.includes(stationId);
     }

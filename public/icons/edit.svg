@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <g transform="translate(32 0)">
+        <path d="M32 480 L32 400 L352 80 L432 160 L112 480 Z" stroke="currentColor" stroke-width="32px" fill="none"/>
+        <line x1="302" y1="130" x2="382" y2="210" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/>
+    </g>
+    <line x1="220" y1="480" x2="480" y2="480" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32" stroke-dasharray="90, 40"/>
+</svg>

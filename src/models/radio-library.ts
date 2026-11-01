@@ -47,6 +47,16 @@ export class RadioLibrary {
         this.stationsById.delete(stationId);
     }
 
+    deleteCollection(collectionId: string): void {
+        if (collectionId === FAVORITES_COLLECTION_ID) {
+            return;
+        }
+        const index = this.collections.findIndex(
+            collection => collection.id === collectionId
+        );
+        this.collections.splice(index, 1);
+    }
+
     isFavorite(stationId: string): boolean {
         return this.getCollection(FAVORITES_COLLECTION_ID)!.containsStation(stationId);
     }
@@ -55,6 +65,11 @@ export class RadioLibrary {
         return this.collections.find(
             collection => collection.id === id
         );
+    }
+
+    renameCollection(collectionId: string, name: string): void {
+        const normalizedName = name.trim();
+        this.getCollection(collectionId)?.rename(normalizedName);
     }
 
     getCollectionName(id: string): string {
@@ -97,24 +112,6 @@ export class RadioLibrary {
         this.collections.push(collection);
 
         return collection;
-    }
-
-    removeCollection(collectionId: string): boolean {
-        if (collectionId === FAVORITES_COLLECTION_ID) {
-            return false;
-        }
-
-        const index = this.collections.findIndex(
-            collection => collection.id === collectionId
-        );
-
-        if (index === -1) {
-            return false;
-        }
-        
-        this.collections.splice(index, 1);
-
-        return true;
     }
 
     addStationToCollection(
