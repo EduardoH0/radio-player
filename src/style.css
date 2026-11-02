@@ -403,6 +403,8 @@ button {
 
     display: flex;
     gap: 5px;
+    overflow: clip;
+    container-type: inline-size; /* Allows to use the actual current width of the #player for the player-button animations */
 }
 
 #player-row-1 {
@@ -433,9 +435,59 @@ button {
     text-overflow: ellipsis;
 }
 #player-btn {
-    width: 35px;
+    --width: 35px;
+    --travel: calc(100cqw);
+    width: var(--width);
     flex-shrink: 0;
     margin-left: auto;
+}
+#player-btn[data-state="loading"] {
+    animation: player-move 5s linear infinite;
+    will-change: transform;
+}
+/*
+ * NOTE:
+ * The animations written inside the svg are frozen the moment the svg LEAVES
+ * the viewport or becomes HIDDEN (for example if the parent container has
+ * `overflow: clip;` || `overflow: hidden;` and the svg moves outside this
+ * parent container.
+ * 
+ * Therefore, `player-move` animation needs to keep a minimal portion of the
+ * svg always on viewport. Note that when it 'leaves' the left side of the player
+ * it is already 'entering' on the right side of the player.
+ *
+ * e.g. (this will freeze the inner animation of the svg):
+ * 
+ * 92% {
+ *      opacity: 0;
+ *      transform: translateX(calc(-2 * var(--travel)));
+ *  }
+ *
+ * `opacity` seems to play no part on this, but has not been thoroughly tested.
+ * */
+@keyframes player-move {
+    0% {
+        transform: translateX(0);
+    }
+    91% {
+        transform: translateX(calc(-1 * var(--travel)));
+        opacity: 1;
+    }
+    92% {
+        opacity: 0;
+        transform: translateX(calc(-1 * var(--travel)));
+    }
+    93% {
+        opacity: 0;
+        transform: translateX(calc(var(--width)));
+    }
+    94% {
+        opacity: 1;
+        transform: translateX(calc(var(--width)));
+    }
+    100% {
+        transform: translateX(0);
+    }
 }
 
 .action-sheet {
