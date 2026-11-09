@@ -21,6 +21,7 @@
 */
 import Hls from "hls.js";
 import type { RadioStation } from "./models/radio-station";
+import { MetadataService } from "./services/metadata/metadata-service";
 
 export type PlayerState = "idle" | "loading" | "playing" | "paused";
 
@@ -38,6 +39,9 @@ export class Player {
     private hls: Hls | null = null;
     private currentStation: RadioStation | null = null;
     private state: PlayerState = "idle";
+
+    private metadataService: MetadataService;
+    private nowPlayingTitle: string | null = null;
 
     /* Incremented to invalidate any in-flight load. */
     private requestId = 0;
@@ -75,6 +79,9 @@ export class Player {
         this.audio.addEventListener("ended", onStopped);
         this.audio.addEventListener("pause", onStopped);
 
+        // Metadata service
+        this.metadataService = new MetadataService();
+
         this.updateUi();
     }
 
@@ -82,6 +89,7 @@ export class Player {
         const id = ++this.requestId;
 
         this.currentStation = station;
+        this.nowPlayingTitle = null;
         this.state = "loading";
         this.updateUi();
 
@@ -130,7 +138,9 @@ export class Player {
     private halt(): void {
         this.requestId++;
         this.clearSource();
+        this.nowPlayingTitle = null;
         this.state = "paused";
+        this.metadataService.stop();
         this.updateUi();
     }
 
@@ -153,6 +163,15 @@ export class Player {
             await this.loadHls(station.url);
             return;
         }
+
+        // NOTE: just works for ICY, HLS will need its own implementation...
+        this.metadataService.start(
+            station.url,
+            (title) => {
+                this.nowPlayingTitle = title;
+                this.updateSubtitle();
+            }
+        );
 
         this.audio.src = station.url;
         await this.audio.play();
@@ -246,8 +265,7 @@ export class Player {
 
     private updateUi(): void {
         this.titleElement.textContent = this.currentStation?.title ?? "...";
-        this.subtitleElement.textContent =
-            this.currentStation?.tags?.join(" · ") ?? "";
+        this.updateSubtitle();
 
         let icon: string;
         switch (this.state) {
@@ -269,5 +287,12 @@ export class Player {
 
         this.buttonElement.disabled = this.currentStation === null;
         this.buttonElement.dataset.state = this.state;
+    }
+
+    updateSubtitle(): void {
+        this.subtitleElement.textContent =
+            this.nowPlayingTitle ??
+            this.currentStation?.tags?.join(" · ") ??
+            "";
     }
 }
