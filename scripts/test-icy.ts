@@ -1,7 +1,7 @@
 // test-icy.ts
 /**
 * Usage:
-*   npx tsx scripts/text-icy.ts <stream-url>
+*   npx tsx scripts/test-icy.ts <stream-url>
 */
 import { startIcyReader } from "../src/services/metadata/icy-reader";
 
