@@ -21,7 +21,7 @@
 */
 import Hls from "hls.js";
 import type { RadioStation } from "./models/radio-station";
-import { MetadataService } from "./services/metadata/metadata-service";
+import { type MetadataService } from "./services/metadata/metadata-service";
 
 export type PlayerState = "idle" | "loading" | "playing" | "paused";
 
@@ -40,13 +40,14 @@ export class Player {
     private currentStation: RadioStation | null = null;
     private state: PlayerState = "idle";
 
-    private metadataService: MetadataService;
+    private metadataService: MetadataService | null = null;
     private nowPlayingTitle: string | null = null;
 
     /* Incremented to invalidate any in-flight load. */
     private requestId = 0;
 
-    public constructor() {
+    public constructor(metadataService: MetadataService | null) {
+        this.metadataService = metadataService;
         this.audio = new Audio();
 
         this.titleElement =
@@ -78,9 +79,6 @@ export class Player {
         }
         this.audio.addEventListener("ended", onStopped);
         this.audio.addEventListener("pause", onStopped);
-
-        // Metadata service
-        this.metadataService = new MetadataService();
 
         this.updateUi();
     }
@@ -140,7 +138,7 @@ export class Player {
         this.clearSource();
         this.nowPlayingTitle = null;
         this.state = "paused";
-        this.metadataService.stop();
+        this.metadataService?.stop();
         this.updateUi();
     }
 
@@ -165,7 +163,7 @@ export class Player {
         }
 
         // NOTE: just works for ICY, HLS will need its own implementation...
-        this.metadataService.start(
+        this.metadataService?.start(
             station.url,
             (title) => {
                 this.nowPlayingTitle = title;

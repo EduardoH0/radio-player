@@ -11,6 +11,10 @@ import type { Collection } from './models/radio-collection';
 import { attachImportControl } from './services/import-control';
 import { loadLibrary, saveLibrary } from './services/storage';
 
+import { MetadataService } from './services/metadata/metadata-service';
+import { startIcyReader } from './services/metadata/icy-reader';
+import { startWorkerSse } from './services/metadata/worker-sse-reader';
+
 import { ViewManager } from './views/view-manager';
 import { StationListView, setActiveStation } from './views/station-list-view';
 import { CollectionListView, setActiveCollection } from './views/collection-list-view';
@@ -28,6 +32,7 @@ export class App {
     private readonly confirmationDialog: ConfirmationDialog;
     private readonly inputDialog: InputDialog;
     private readonly topBar: TopBar;
+    private readonly metadataService: MetadataService;
 
     private readonly favoritesView: StationListView;
     private readonly collectionStationsView: StationListView;
@@ -39,7 +44,10 @@ export class App {
     private openCollectionId: string | null = null;
 
     constructor() {
-        this.player = new Player();
+        this.metadataService = new MetadataService(
+            [startIcyReader, startWorkerSse]
+        );
+        this.player = new Player(this.metadataService);
         this.viewManager = new ViewManager();
         this.actionSheet = new ActionSheet();
         this.confirmationDialog = new ConfirmationDialog();
