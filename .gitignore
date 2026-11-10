@@ -25,3 +25,8 @@ dist-ssr
 
 junk/
 certs/
+
+worker/.wrangler/
+
+.envrc
+.env

@@ -5,7 +5,7 @@ import { parseIcyStream } from "./icy-parser";
 export async function startIcyReader(
     url: string,
     onMetadata: (title: string) => void,
-    signal?: AbortSignal
+    signal: AbortSignal
 ): Promise<void> {
     // Tell server the client supports Icy-MetaData
     const response = await fetch(
@@ -36,7 +36,7 @@ export async function startIcyReader(
     }
 
     if (!response.body) {
-        throw new Error("Response has no readable body");
+        throw new Error("Response has no body");
     }
 
     await parseIcyStream(
