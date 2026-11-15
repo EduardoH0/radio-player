@@ -18,21 +18,14 @@ export function createCollectionElement(
         </div>
 
         <div class="collection-content">
-
             <div class="collection-row-1">
-
-                <span class="collection-title">
-                    ${collection.name}
-                </span>
-
-                <button class="collection-actions-trigger">
-                    ...
-                </button>
-
+                <span class="collection-title"></span>
+                <button class="collection-actions-trigger">...</button>
             </div>
-
         </div>
     `;
+
+    element.querySelector(".collection-title")!.textContent = collection.name;
 
     element.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -41,10 +34,7 @@ export function createCollectionElement(
         }
     });
 
-    element.addEventListener(
-        "click",
-        () => { onSelect(collection.id); }
-    );
+    element.addEventListener("click", () => { onSelect(collection.id); });
 
     element.querySelector<HTMLButtonElement>(".collection-actions-trigger")
         ?.addEventListener("click", event => {

@@ -18,27 +18,20 @@ export function createStationElement(
         </div>
 
         <div class="station-content">
-            
             <div class="station-row-1">
-                <span class="station-title">
-                    ${station.title}
-                </span>
-
-                <span class="station-secondary">
-                    ${station.country? station.country : ""}
-                </span>
+                <span class="station-title"></span>
+                <span class="station-secondary"></span>
             </div>
-
             <div class="station-row-2">
-                <span class="station-tags">
-                    ${station.tags?.join(" · ") ?? ""}
-                </span>
-                
-                <button class="station-actions-trigger">
-                    ...
-                </button>
+                <span class="station-tags"></span>
+                <button class="station-actions-trigger">...</button>
             </div>
+        </div>
     `;
+
+    element.querySelector(".station-title")!.textContent = station.title;
+    element.querySelector(".station-secondary")!.textContent = station.country ?? "";
+    element.querySelector(".station-tags")!.textContent = station.tags?.join(" · ") ?? "";
 
     element.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -47,10 +40,7 @@ export function createStationElement(
         }
     });
 
-    element.addEventListener(
-        "click",
-        () => { onSelect(station); }
-    );
+    element.addEventListener("click", () => { onSelect(station); });
 
     element.querySelector<HTMLButtonElement>(".station-actions-trigger")
         ?.addEventListener("click", event => {
