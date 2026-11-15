@@ -25,7 +25,7 @@ import { type MetadataService } from "./services/metadata/metadata-service";
 
 export type PlayerState = "idle" | "loading" | "playing" | "paused";
 
-const LOAD_TIMEOUT_MS = 15000;
+const LOAD_TIMEOUT_MS = 25000;
 
 
 export class Player {
@@ -71,7 +71,7 @@ export class Player {
             }
         });
 
-        // Stream ended or the OS paused it (call...)
+        // Stream ended or the OS paused it, e.g. a phone call
         const onStopped = () => {
             if (this.state === "playing") {
                 this.halt();
@@ -84,7 +84,8 @@ export class Player {
     }
 
     public async play(station: RadioStation): Promise<void> {
-        const id = ++this.requestId;
+        this.halt();  // IMPORTANT: reset all before moving forward
+        const id = this.requestId;
 
         this.currentStation = station;
         this.nowPlayingTitle = null;
