@@ -23,7 +23,7 @@ import Hls from "hls.js";
 import type { RadioStation } from "./models/radio-station";
 import { type MetadataService } from "./services/metadata/metadata-service";
 
-export type PlayerState = "idle" | "loading" | "playing" | "paused";
+export type PlayerState = "idle" | "loading" | "playing" | "stopped";
 
 const LOAD_TIMEOUT_MS = 25000;
 
@@ -67,14 +67,14 @@ export class Player {
         this.audio.addEventListener("error", () => {
             if (this.state === "loading" || this.state === "playing") {
                 console.error("Audio error:", this.audio.error);
-                this.halt();
+                this.stop();
             }
         });
 
         // Stream ended or the OS paused it, e.g. a phone call
         const onStopped = () => {
             if (this.state === "playing") {
-                this.halt();
+                this.stop();
             }
         }
         this.audio.addEventListener("ended", onStopped);
@@ -84,7 +84,7 @@ export class Player {
     }
 
     public async play(station: RadioStation): Promise<void> {
-        this.halt();  // IMPORTANT: reset all before moving forward
+        this.stop();  // IMPORTANT: reset all before moving forward
         const id = this.requestId;
 
         this.currentStation = station;
@@ -99,24 +99,21 @@ export class Player {
         } catch (error) {
             if (id !== this.requestId) return; // stale, ignore (e.g. AbortError)
             console.log(`Error loading station: ${error}`);
-            this.clearSource();
-            this.state = "paused";
+            this.stop();
         }
         
         this.updateUi();
     }
 
-    public pause(): void {
+    public stop(): void {
+        this.state = "stopped";
         this.halt();
     }
 
     public reset(): void {
-        this.requestId++;
-        this.clearSource();
-        this.currentStation = null;
-
         this.state = "idle";
-        this.updateUi();
+        this.currentStation = null;
+        this.halt();
     }
 
     public async toggle(): Promise<void> {
@@ -126,19 +123,18 @@ export class Player {
 
         // Tapping while loading cancels the load.
         if (this.state === "playing" || this.state === "loading") {
-            this.pause();
+            this.stop();
             return;
         }
 
         await this.play(this.currentStation);
     }
     
-    /** Cancels any pending load, releases the stream and shows "paused". */
+    /** Cancels any pending load, releases the stream, udpates UI. */
     private halt(): void {
         this.requestId++;
         this.clearSource();
         this.nowPlayingTitle = null;
-        this.state = "paused";
         this.metadataService?.stop();
         this.updateUi();
     }
@@ -243,7 +239,7 @@ export class Player {
                 } else {
                     // Died after playback had already started.
                     // Promise would have resolved already, so we have to handle the reset manually.
-                    this.halt();
+                    this.stop();
                 }
             });
         });
@@ -271,7 +267,7 @@ export class Player {
             case "playing":
                 icon = "pause.svg";
                 break;
-            case "paused":
+            case "stopped":
                 icon = "play.svg";
                 break;
             case "loading":

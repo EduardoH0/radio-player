@@ -1,4 +1,5 @@
 // icy-parser.ts
+import chardet from "chardet";
 
 
 export async function parseIcyStream(
@@ -70,7 +71,14 @@ class IcyStreamReader {
 
 
 function decodeMetadata(metadataBytes: Uint8Array): string | null {
-    const metadata = new TextDecoder().decode(metadataBytes)
+    let metadata: string;
+
+    const encoding = chardet.detect(metadataBytes) ?? "windows-1252";
+    try {
+        metadata = new TextDecoder(encoding).decode(metadataBytes);
+    } catch {
+        metadata = new TextDecoder("windows-1252").decode(metadataBytes);
+    }
     // block padded with null characters (\0) to reach a multiple of 16 bytes
     const text = metadata.replace(/\0+$/, "");
     // look for `StreamTitle`; not 100% sure this is the key in all cases...
