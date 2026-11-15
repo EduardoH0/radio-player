@@ -13,6 +13,7 @@
     "vite": "^8.3.0"
   },
   "dependencies": {
+    "chardet": "^2.2.0",
     "hls.js": "^1.7.3"
   }
 }
