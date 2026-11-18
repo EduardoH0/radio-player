@@ -22,6 +22,7 @@
 import Hls from "hls.js";
 import type { RadioStation } from "./models/radio-station";
 import { type MetadataService } from "./services/metadata/metadata-service";
+import { MarqueeElement } from "./elements/marquee-element";
 
 export type PlayerState = "idle" | "loading" | "playing" | "stopped";
 
@@ -32,7 +33,7 @@ export class Player {
     private readonly audio: HTMLAudioElement;
 
     private readonly titleElement: HTMLDivElement;
-    private readonly subtitleElement: HTMLDivElement;
+    private readonly subtitleMarquee: MarqueeElement;
     private readonly buttonElement: HTMLButtonElement;
     private readonly buttonIconElement: HTMLImageElement;
 
@@ -52,8 +53,9 @@ export class Player {
 
         this.titleElement =
             document.querySelector<HTMLDivElement>("#player-title")!;
-        this.subtitleElement =
-            document.querySelector<HTMLDivElement>("#player-sub-title")!;
+        this.subtitleMarquee = new MarqueeElement(
+            document.querySelector<HTMLDivElement>("#player-marquee")!
+        );
         this.buttonElement =
             document.querySelector<HTMLButtonElement>("#player-btn")!;
         this.buttonIconElement =
@@ -285,9 +287,10 @@ export class Player {
     }
 
     updateSubtitle(): void {
-        this.subtitleElement.textContent =
+        this.subtitleMarquee.setText(
             this.nowPlayingTitle ??
             this.currentStation?.tags?.join(" · ") ??
-            "";
+            ""
+        );
     }
 }
