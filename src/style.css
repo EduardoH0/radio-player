@@ -246,6 +246,7 @@ button {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     overflow: hidden;
 }
 #create-collection-btn {
@@ -421,18 +422,46 @@ button {
     justify-content: center;
 }
 #player-text-content {
-    overflow: hidden;
+    min-width: 0;
 }
 #player-title {
     font-weight: 700;
-}
-#player-title,
-#player-sub-title{
-    height: fit-content;
-
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+@property --fade-left {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+@property --fade-right {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+#player-marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 var(--fade-left),
+        #000 calc(100% - var(--fade-right)),
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 var(--fade-left),
+        #000 calc(100% - var(--fade-right)),
+        transparent 100%
+    );
+
+}
+#player-sub-title {
+    display: inline-block; /* required for transform */
+    white-space: nowrap;
+    will-change: transform;
 }
 #player-btn {
     --width: 35px;
