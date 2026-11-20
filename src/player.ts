@@ -293,10 +293,10 @@ export class Player {
     }
 
     updateSubtitle(): void {
-        this.subtitleMarquee.setText(
-            this.nowPlayingTitle ??
-            this.currentStation?.tags?.join(" · ") ??
-            ""
-        );
+        const text = this.nowPlayingTitle ??
+            this.currentStation?.tags?.join(" · ") ?? "";
+        if (text !== this.subtitleMarquee.getText()) {
+            this.subtitleMarquee.setText(text);
+        }
     }
 }
