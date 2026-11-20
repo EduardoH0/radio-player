@@ -43,6 +43,10 @@ export class MarqueeElement {
         this.update();
     }
 
+    getText(): string {
+        return this.text.textContent;
+    }
+
     private update(): void {
         this.animations.forEach((a) => a.cancel());
         this.animations = [];
@@ -86,7 +90,7 @@ export class MarqueeElement {
             const remaining = shift - travelled;
             // Width of fade-left can never be > than `remaining`
             frames.push({
-                "--fade-left": `${Math.min(FADE_PX, travelled, remaining)}px`,
+                "--fade-left": `${Math.min(FADE_PX, travelled**3, remaining)}px`,
                 offset: Math.min(1, t1 + x * (1 - t1)),
             });
         }
