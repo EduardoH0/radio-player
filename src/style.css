@@ -456,9 +456,8 @@ button {
         #000 calc(100% - var(--fade-right)),
         transparent 100%
     );
-
 }
-#player-sub-title {
+#player-marquee > span {
     display: inline-block; /* required for transform */
     white-space: nowrap;
     will-change: transform;
