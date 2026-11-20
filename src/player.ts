@@ -98,13 +98,12 @@ export class Player {
             await this.withTimeout(this.loadStation(station), LOAD_TIMEOUT_MS);
             if (id !== this.requestId) return;  // superseded or cancelled
             this.state = "playing";
+            this.updatePlaybackControls();
         } catch (error) {
             if (id !== this.requestId) return; // stale, ignore (e.g. AbortError)
             console.log(`Error loading station: ${error}`);
             this.stop();
         }
-        
-        this.updateUi();
     }
 
     public stop(): void {
@@ -261,9 +260,16 @@ export class Player {
     }
 
     private updateUi(): void {
+        this.updateStationInfo();
+        this.updatePlaybackControls();
+    }
+
+    private updateStationInfo(): void {
         this.titleElement.textContent = this.currentStation?.title ?? "...";
         this.updateSubtitle();
+    }
 
+    private updatePlaybackControls(): void {
         let icon: string;
         switch (this.state) {
             case "playing":
