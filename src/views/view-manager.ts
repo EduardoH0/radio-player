@@ -2,7 +2,7 @@
 import { type View } from "./view";
 
 
-export type ViewMode = "favorites" | "library" | "collection";
+export type ViewMode = "favorites" | "library" | "collection" | "history";
 
 
 export class ViewManager {

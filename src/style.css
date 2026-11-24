@@ -279,7 +279,8 @@ button {
     */
     scrollbar-gutter: stable;
 }
-#collection-view-content {
+#collection-view-content,
+#history-view-content {
     padding-top: 0;
 }
 .view-content::-webkit-scrollbar {
@@ -388,6 +389,66 @@ button {
 }
 .collection[data-collection-id="all-stations"] .collection-actions-trigger {
     display: none; /* remove all-station actions button till some action applies */
+}
+.history-entry {
+    width: 300px;
+    font-size: 1rem;
+    padding: 10px;
+    border-bottom: 1px solid var(--color-1);
+    cursor: pointer;
+
+    display: flex;
+    gap: 10px;
+}
+.history-entry:nth-child(5n) {
+    border-bottom: 2px solid var(--color-1);
+}
+.history-entry-right {
+    height: 100%;
+    width: 30px;
+    flex-shrink: 0;
+    display: flex;
+}
+.history-entry-copy-btn {
+    width: 100%;
+}
+.history-entry .history-entry-copy-btn svg #copy-fill,
+.history-entry:nth-child(2n) .history-entry-copy-btn.copied svg #copy-fill-2 {
+    fill: var(--color-5);
+    stroke: var(--color-5);
+}
+
+.history-entry .history-entry-copy-btn.copied svg #copy-fill-2,
+.history-entry:nth-child(2n) .history-entry-copy-btn svg #copy-fill {
+    fill: var(--color-4);
+    stroke: var(--color-4);
+}
+.history-entry-content {
+    flex-grow: 1;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.history-entry-title {
+    flex-grow: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.history-entry.active .history-entry-title {
+    white-space: normal;
+}
+.history-entry-row-2 {
+    font-size: 0.8rem;
+    display: flex;
+    gap: 5px;
+}
+.history-entry-station {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 #player {

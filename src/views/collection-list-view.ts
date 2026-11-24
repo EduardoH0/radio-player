@@ -70,10 +70,10 @@ export class CollectionListView {
 
     filter(query: string): void {
         this.query = query.trim().toLowerCase();
+        const tokens = this.query.split(/\s+/).filter(Boolean);
 
         this.container.querySelectorAll<HTMLElement>(".collection").forEach(el => {
-            const words = (el.textContent ?? "").toLowerCase().split(/\s+/);
-            const tokens = this.query.split(/\s+/).filter(Boolean);
+            const words = (el.dataset.search ?? "").split(/\s+/);
 
             el.hidden = !tokens.every(token =>
                 words.some(word => word.startsWith(token))

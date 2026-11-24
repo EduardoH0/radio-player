@@ -43,12 +43,17 @@ export class Player {
 
     private metadataService: MetadataService | null = null;
     private nowPlayingTitle: string | null = null;
+    private onTitleChange: (title: string, station: string) => void;
 
     /* Incremented to invalidate any in-flight load. */
     private requestId = 0;
 
-    public constructor(metadataService: MetadataService | null) {
+    public constructor(
+        metadataService: MetadataService | null,
+        onTitleChange: (title: string, station: string) => void
+    ) {
         this.metadataService = metadataService;
+        this.onTitleChange = onTitleChange;
         this.audio = new Audio();
 
         this.titleElement =
@@ -166,6 +171,7 @@ export class Player {
             (title) => {
                 this.nowPlayingTitle = title;
                 this.updateSubtitle();
+                this.onTitleChange(title, station.title);
             }
         );
 
