@@ -27,6 +27,10 @@ export function createCollectionElement(
 
     element.querySelector(".collection-title")!.textContent = collection.name;
 
+    element.dataset.search = [
+        collection.name
+    ].filter(Boolean).join(" ").toLowerCase();
+
     element.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();

@@ -33,6 +33,12 @@ export function createStationElement(
     element.querySelector(".station-secondary")!.textContent = station.country ?? "";
     element.querySelector(".station-tags")!.textContent = station.tags?.join(" · ") ?? "";
 
+    element.dataset.search = [
+        station.title,
+        station.country,
+        ...(station.tags ?? [])
+    ].filter(Boolean).join(" ").toLowerCase();
+
     element.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
