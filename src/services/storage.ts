@@ -2,8 +2,11 @@
 import { RadioLibrary } from '../models/radio-library'
 import { type RadioStation } from "../models/radio-station";
 import { RadioCollection } from "../models/radio-collection";
+import { PlayHistory } from "../models/play-history";
+import type { HistoryEntry } from "../models/history-entry";
 
-const STORAGE_KEY = "radio-player-library";
+const LIBRARY_STORAGE_KEY = "radio-player-library";
+const HISTORY_STORAGE_KEY = "radio-player-history";
 
 interface LoadedCollectionData {
     id: string,
@@ -16,9 +19,33 @@ interface LoadedLibraryData {
     collections?: LoadedCollectionData[]
 }
 
+interface LoadedHistoryData {
+    entries?: HistoryEntry[]
+}
+
+export function loadHistory(): PlayHistory {
+    const value = localStorage.getItem(HISTORY_STORAGE_KEY);
+
+    if (!value) {
+        return new PlayHistory([]);
+    }
+
+    const data = JSON.parse(value) as LoadedHistoryData;
+
+    const history = new PlayHistory(data.entries ?? [])
+    history.prune();
+    return history
+}
+
+export function saveHistory(history: PlayHistory): void {
+    localStorage.setItem(
+        HISTORY_STORAGE_KEY,
+        JSON.stringify({ entries: history.entries })
+    );
+}
 
 export function loadLibrary(): RadioLibrary {
-    const value = localStorage.getItem(STORAGE_KEY);
+    const value = localStorage.getItem(LIBRARY_STORAGE_KEY);
 
     if (!value) {
         return new RadioLibrary([], []);
@@ -44,7 +71,7 @@ export function loadLibrary(): RadioLibrary {
 
 export function saveLibrary(library: RadioLibrary): void {
     localStorage.setItem(
-        STORAGE_KEY,
+        LIBRARY_STORAGE_KEY,
         JSON.stringify({
             stations: library.stations,
             collections: library.collections

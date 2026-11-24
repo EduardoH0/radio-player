@@ -9,7 +9,7 @@ import type { RadioStation } from './models/radio-station';
 import type { Collection } from './models/radio-collection';
 
 import { attachImportControl } from './services/import-control';
-import { loadLibrary, saveLibrary } from './services/storage';
+import { loadHistory, loadLibrary, saveHistory, saveLibrary } from './services/storage';
 
 import { MetadataService } from './services/metadata/metadata-service';
 import { startIcyReader } from './services/metadata/icy-reader';
@@ -18,11 +18,14 @@ import { startWorkerSse } from './services/metadata/worker-sse-reader';
 import { ViewManager } from './views/view-manager';
 import { StationListView, setActiveStation } from './views/station-list-view';
 import { CollectionListView, setActiveCollection } from './views/collection-list-view';
+import { HistoryView } from './views/history-view';
 
 import { type SheetAction, ActionSheet } from './elements/action-sheet';
 import { ConfirmationDialog } from './elements/confirmation-dialog';
 import { InputDialog } from './elements/input-dialog';
 import { TopBar } from './elements/top-bar';
+
+import { PlayHistory } from './models/play-history';
 
 
 export class App {
@@ -37,8 +40,10 @@ export class App {
     private readonly favoritesView: StationListView;
     private readonly collectionStationsView: StationListView;
     private readonly libraryView: CollectionListView;
+    private readonly historyView: HistoryView;
 
     private library: RadioLibrary;
+    private history: PlayHistory;
     private activeStationId: string | null = null;
     private activeCollectionId: string | null = null;
     private openCollectionId: string | null = null;
@@ -47,12 +52,21 @@ export class App {
         this.metadataService = new MetadataService(
             [startIcyReader, startWorkerSse]
         );
-        this.player = new Player(this.metadataService);
+        this.player = new Player(
+            this.metadataService,
+            (title, station) => {
+                const entry = this.history.add(title, station);
+                if (!entry) return;
+                saveHistory(this.history);
+                this.historyView.prepend(entry);
+            }
+        );
         this.viewManager = new ViewManager();
         this.actionSheet = new ActionSheet();
         this.confirmationDialog = new ConfirmationDialog();
         this.inputDialog = new InputDialog();
         this.library = loadLibrary();
+        this.history = loadHistory();
 
         this.topBar = new TopBar(
             document.querySelector<HTMLSpanElement>("#top-nav-info-text")!,
@@ -91,9 +105,17 @@ export class App {
             }
         );
 
+        this.historyView = new HistoryView(
+            document.querySelector<HTMLDivElement>("#history-view-title")!,
+            document.querySelector<HTMLDivElement>("#history-entries")!,
+            document.querySelector<HTMLDivElement>("#history-view-content"),
+            () => this.syncTopBar()
+        );
+
         this.viewManager.register("favorites", this.favoritesView);
         this.viewManager.register("collection", this.collectionStationsView);
         this.viewManager.register("library", this.libraryView);
+        this.viewManager.register("history", this.historyView);
 
         this.viewManager.onShow = () => {
             this.topBar.closeSearch();
@@ -124,6 +146,9 @@ export class App {
                 this.activeCollectionId = null;
                 this.viewManager.show("favorites");
         });
+
+        document.querySelector<HTMLButtonElement>("#history-view-btn")
+            ?.addEventListener("click", () => { this.viewManager.show("history"); });
     }
 
     private reset(): void {
@@ -133,6 +158,7 @@ export class App {
 
         this.renderFavorites();
         this.renderLibrary();
+        this.renderHistory();
 
         this.viewManager.show("favorites");
     }
@@ -170,6 +196,10 @@ export class App {
             ...this.library.userCollections,
         ];
         this.libraryView.render(allCollections);
+    }
+
+    private renderHistory(): void {
+        this.historyView.render(this.history.historyEntries);
     }
 
     private async selectStation(station: RadioStation): Promise<void> {
