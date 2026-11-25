@@ -209,7 +209,7 @@ button {
     fill: var(--color-6);
 }
 #history-view-btn.active svg #history-fill {
-    fill: var(--color-6);
+    fill: var(--color-4);
 }
 
 #views{
