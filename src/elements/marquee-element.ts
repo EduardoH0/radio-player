@@ -1,20 +1,13 @@
 // marquee-element.ts
-const SPEED = 20;  // px per second
+const SPEED = 30;  // px per second
 const PAUSE_MS = 3000;  // hold before moving
+const RAMP_MS = 3000;  // time to reach/leave full speed
 const FADE_PX = 16;  // max fade width
 const GAP_PX = 20;  // gap between title and duplicated
-const BEZIER = [0.42, 0, 0.58, 1];
-const EASING = `cubic-bezier(${BEZIER.join(", ")})`;
+const EASE_IN = "cubic-bezier(0.3333, 0, 0.6667, 0.3333)";  // y = x²
+const EASE_OUT = "cubic-bezier(0.3333, 0.6667, 0.6667, 1)";  // y = 1-(1-x)²
 const FADE_STEPS = 24;  // number of samples of bezier
 
-function easingPoint(s: number): { x: number; y: number} {
-    const [x1, y1, x2, y2] = BEZIER;
-    const u = 1 - s;
-    return {
-        x: 3 * u * u * s * x1 + 3 * u * s * s * x2 + s ** 3,
-        y: 3 * u * u * s * y1 + 3 * u * s * s * y2 + s ** 3,
-    };
-}
 
 export class MarqueeElement {
     private readonly container: HTMLElement;
@@ -60,9 +53,15 @@ export class MarqueeElement {
         if (!overflowing) return;
 
         const shift = this.text.offsetWidth + GAP_PX;
-        const moveMs = (shift / SPEED) * 1000;
+        const rampMs = Math.min(RAMP_MS, (shift / SPEED) * 1000);
+        // 0.5 (avg) since velocity climbs linearly from 0 to `SPEED`
+        const rampPx = 0.5 * SPEED * rampMs / 1000;
+        const cruiseMs = ((shift - 2 * rampPx) / SPEED) * 1000;
+        const moveMs = cruiseMs + 2 * rampMs;
         const total = moveMs + PAUSE_MS;
-        const t1 = PAUSE_MS / total;  // move starts here
+        const t1 = PAUSE_MS / total;  // accel starts
+        const t2 = (PAUSE_MS + rampMs) / total;  // cruise starts
+        const t3 = (PAUSE_MS + moveMs - rampMs) / total;  // decel starts
         const options = { duration: total, iterations: Infinity };
 
         // Text movement
@@ -71,7 +70,9 @@ export class MarqueeElement {
                 el.animate(
                     [
                         { transform: "translateX(0)", offset: 0 },
-                        { transform: "translateX(0)", offset: t1, easing: EASING },
+                        { transform: "translateX(0)", offset: t1, easing: EASE_IN},
+                        { transform: `translateX(-${rampPx}px)`, offset: t2, easing: "linear" },
+                        { transform: `translateX(-${shift - rampPx}px)`, offset: t3, easing: EASE_OUT },
                         { transform: `translateX(-${shift}px)`, offset: 1 },
                     ],
                     options
@@ -84,15 +85,32 @@ export class MarqueeElement {
             { "--fade-left": "0px", offset: 0 },
             { "--fade-left": "0px", offset: t1},
         ]
-        for (let i = 1; i <= FADE_STEPS; i++) {
-            const { x, y } = easingPoint(i / FADE_STEPS);
-            const travelled = y * shift;
-            const remaining = shift - travelled;
-            // Width of fade-left can never be > than `remaining`
-            frames.push({
-                "--fade-left": `${Math.min(FADE_PX, travelled**3, remaining)}px`,
-                offset: Math.min(1, t1 + x * (1 - t1)),
-            });
+
+        const pos = (ms: number): number => {  // ms since move started
+            // Accel: velocity grows linearly 0 -> SPEED so distance grows t²
+            if (ms < rampMs) {
+                return rampPx * (ms / rampMs) ** 2;
+            }
+            // Decel: accel ramp mirrored
+            if (ms > moveMs - rampMs) {
+                return shift - rampPx * ((moveMs - ms) / rampMs) ** 2;
+            }
+            // Cruise: constant speed
+            return rampPx + (ms - rampMs) * SPEED / 1000;
+        };
+
+        // Sample only the 2 ramps. During the cruise, the fade sits at `FADE_PX`,
+        // and the browser interpolates between the end of the first ramp and
+        // the start of the second.
+        for (const [from, to] of [[0, rampMs], [moveMs - rampMs, moveMs]]) {
+            for (let i = 0; i <= FADE_STEPS; i++) {
+                const ms = from + (i / FADE_STEPS) * (to - from);
+                const travelled = pos(ms);
+                frames.push({
+                    "--fade-left": `${Math.min(FADE_PX, travelled ** 3, shift - travelled)}px`,
+                    offset: Math.min(1, (PAUSE_MS + ms) / total),
+                });
+            }
         }
         this.animations.push(this.container.animate(frames, options));
     }
