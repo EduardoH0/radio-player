@@ -208,6 +208,9 @@ button {
 #library-view-btn.active svg #book-2-fill {
     fill: var(--color-6);
 }
+#history-view-btn.active svg #history-fill {
+    fill: var(--color-6);
+}
 
 #views{
     width: 100%;
