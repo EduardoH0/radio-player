@@ -44,6 +44,8 @@ html {
     background-color: var(--color-3);
     touch-action: manipulation; /* disable double-touch */
     overflow: hidden;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
 }
 
 body {
@@ -522,6 +524,7 @@ button {
     display: inline-block; /* required for transform */
     white-space: nowrap;
     will-change: transform;
+    font-size: 1rem;
 }
 #player-btn {
     --width: 35px;
