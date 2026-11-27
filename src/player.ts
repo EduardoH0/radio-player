@@ -23,6 +23,7 @@ import Hls from "hls.js";
 import type { RadioStation } from "./models/radio-station";
 import { type MetadataService } from "./services/metadata/metadata-service";
 import { MarqueeElement } from "./elements/marquee-element";
+import type { MediaSessionService } from "./services/media-session";
 
 export type PlayerState = "idle" | "loading" | "playing" | "stopped";
 
@@ -42,6 +43,7 @@ export class Player {
     private state: PlayerState = "idle";
 
     private metadataService: MetadataService | null = null;
+    private mediaSessionService: MediaSessionService | null = null;
     private nowPlayingTitle: string | null = null;
     private onTitleChange: (title: string, station: string) => void;
 
@@ -50,9 +52,12 @@ export class Player {
 
     public constructor(
         metadataService: MetadataService | null,
+        mediaSessionService: MediaSessionService | null,
         onTitleChange: (title: string, station: string) => void
     ) {
         this.metadataService = metadataService;
+        this.mediaSessionService = mediaSessionService;
+
         this.onTitleChange = onTitleChange;
         this.audio = new Audio();
 
@@ -78,6 +83,10 @@ export class Player {
             }
         });
 
+        // Call once audio is actually playing.
+        this.audio.addEventListener("playing", () => {
+            this.mediaSessionService?.activate()
+        });
         // Stream ended or the OS paused it, e.g. a phone call
         const onStopped = () => {
             if (this.state === "playing") {
@@ -112,14 +121,20 @@ export class Player {
     }
 
     public stop(): void {
+        // From "playing": keep the element attached so the OS media session (?)
+        // survives (Android/iOS). Resuming goes through play(), which reconnects.
+        // From "loading": tear down, or a pending hls.js load could start audio
+        // later.
+        const keepSession = this.state === "playing";
         this.state = "stopped";
-        this.halt();
+        this.halt(keepSession);
     }
 
     public reset(): void {
         this.state = "idle";
         this.currentStation = null;
-        this.halt();
+        this.halt(false);
+        this.mediaSessionService?.clear();
     }
 
     public async toggle(): Promise<void> {
@@ -137,12 +152,22 @@ export class Player {
     }
     
     /** Cancels any pending load, releases the stream, udpates UI. */
-    private halt(): void {
+    private halt(keepSession: boolean): void {
         this.requestId++;
-        this.clearSource();
+        if (keepSession) {
+            this.releaseStream();
+        } else {
+            this.clearSource();
+        }
         this.nowPlayingTitle = null;
         this.metadataService?.stop();
         this.updateUi();
+    }
+
+    /** Stops audio and network, but leaves the source attached **/
+    private releaseStream(): void {
+        this.hls?.stopLoad();
+        this.audio.pause();
     }
 
     private withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -215,7 +240,7 @@ export class Player {
 
     private loadHlsWithLibrary(url: string,): Promise<void> {
         return new Promise((resolve, reject) => {
-            const hls = new Hls();
+            const hls = new Hls({ liveDurationInfinity: true });
             let settled = false;
 
             this.hls = hls;
@@ -291,6 +316,7 @@ export class Player {
                 icon = "";
                 break;
         }
+        this.mediaSessionService?.setState(this.state);
 
         this.buttonIconElement.src = `${import.meta.env.BASE_URL}icons/${icon}`;
 
@@ -303,6 +329,12 @@ export class Player {
             this.currentStation?.tags?.join(" · ") ?? "";
         if (text !== this.subtitleMarquee.getText()) {
             this.subtitleMarquee.setText(text);
+        }
+        if (this.currentStation) {
+            this.mediaSessionService?.setNowPlaying(
+                this.currentStation,
+                this.nowPlayingTitle
+            );
         }
     }
 }

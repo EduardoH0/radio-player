@@ -15,6 +15,8 @@ import { MetadataService } from './services/metadata/metadata-service';
 import { startIcyReader } from './services/metadata/icy-reader';
 import { startWorkerSse } from './services/metadata/worker-sse-reader';
 
+import { MediaSessionService } from './services/media-session';
+
 import { ViewManager } from './views/view-manager';
 import { StationListView, setActiveStation } from './views/station-list-view';
 import { CollectionListView, setActiveCollection } from './views/collection-list-view';
@@ -36,6 +38,7 @@ export class App {
     private readonly inputDialog: InputDialog;
     private readonly topBar: TopBar;
     private readonly metadataService: MetadataService;
+    private readonly mediaSessionService: MediaSessionService | null;
 
     private readonly favoritesView: StationListView;
     private readonly collectionStationsView: StationListView;
@@ -52,8 +55,12 @@ export class App {
         this.metadataService = new MetadataService(
             [startIcyReader, startWorkerSse]
         );
+        this.mediaSessionService = MediaSessionService.isSupported()
+            ? new MediaSessionService()
+            : null;
         this.player = new Player(
             this.metadataService,
+            this.mediaSessionService,
             (title, station) => {
                 const entry = this.history.add(title, station);
                 if (!entry) return;
@@ -61,6 +68,13 @@ export class App {
                 this.historyView.prepend(entry);
             }
         );
+        this.mediaSessionService?.setHandlers({
+            play: () => void this.player.toggle(),
+            stop: () => this.player.stop(),
+            next: () => void this.playAdjacent(1),
+            previous: () => void this.playAdjacent(-1)
+        })
+
         this.viewManager = new ViewManager();
         this.actionSheet = new ActionSheet();
         this.confirmationDialog = new ConfirmationDialog();
@@ -131,6 +145,16 @@ export class App {
         });
 
         this.reset();
+    }
+
+    private async playAdjacent(step: 1 | -1): Promise<void> {
+        const stations = this.library.getCollectionStations(
+            this.activeCollectionId ?? FAVORITES_COLLECTION_ID
+        );
+        if (stations.length === 0) return;
+        const index = stations.findIndex((station) => station.id === this.activeStationId);
+        const next = stations[(index + step + stations.length) % stations.length];
+        await this.selectStation(next);
     }
 
     private syncTopBar(): void {
